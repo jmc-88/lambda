@@ -6,6 +6,9 @@
 #include <sstream>
 #include <stack>
 
+#include <Ptr.h>
+#include <Clonable.h>
+
 using namespace std;
 
 #endif

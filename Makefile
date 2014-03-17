@@ -5,7 +5,7 @@ all : bin/lambda
 
 clean :
 	rm -rf bin
-	rm inc/PCH.h.gch
+	rm -f inc/PCH.h.gch
 
 bin :
 	mkdir -p bin

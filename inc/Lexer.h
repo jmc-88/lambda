@@ -27,6 +27,7 @@ public:
 	struct InvalidCharacterException {};
 
 	Token Current() const;
+	bool End() const;
 
 	bool HasNext() const;
 	Token Next();

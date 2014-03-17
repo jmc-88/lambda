@@ -15,6 +15,11 @@ Lexer::Token Lexer::Current() const {
 }
 
 
+bool Lexer::End() const {
+	return m_Token == TOKEN_END;
+}
+
+
 bool Lexer::HasNext() const {
 	while (true) {
 		int const ch = m_ris.peek();
