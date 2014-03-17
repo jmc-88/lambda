@@ -15,7 +15,7 @@ public:
 private:
 	istream &m_ris;
 
-	stack<Token const> m_Buffer;
+	stack<Token> m_Buffer;
 
 	Token m_Token;
 
