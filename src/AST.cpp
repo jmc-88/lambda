@@ -68,9 +68,9 @@ Closure const &FunctionNode::Evaluate(Environment &rEnvironment) const {
 		for (auto it = ++(m_Arguments.begin()); it != m_Arguments.end(); ++it) {
 			SubArguments.push_back(*it);
 		}
-		return *new Closure(*(m_Arguments.begin()), new FunctionNode(move(SubArguments), m_pBody->Clone()), rEnvironment);
+		return *new Closure(*(m_Arguments.begin()), new FunctionNode(move(SubArguments), m_pBody->Clone()), rEnvironment.Capture());
 	} else {
-		return *new Closure(*(m_Arguments.begin()), m_pBody->Clone(), rEnvironment);
+		return *new Closure(*(m_Arguments.begin()), m_pBody->Clone(), rEnvironment.Capture());
 	}
 }
 

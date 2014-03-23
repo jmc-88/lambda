@@ -4,11 +4,11 @@
 #include <Environment.h>
 
 
-Closure::Closure(string const &a_rstrArgument, Ptr<AbstractNode const> &&a_rrpBody, Environment const &rEnvironment)
+Closure::Closure(string const &a_rstrArgument, Ptr<AbstractNode const> &&a_rrpBody, map<string, Closure const*> &&a_rrCapture)
 	:
 m_strArgument(a_rstrArgument),
 	m_pBody(move(a_rrpBody)),
-	m_Capture(rEnvironment.Capture()) {}
+	m_Capture(move(a_rrCapture)) {}
 
 
 Closure::operator string const () const {
