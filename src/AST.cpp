@@ -95,8 +95,8 @@ ApplicationNode *ApplicationNode::Clone() const {
 
 
 Closure const &ApplicationNode::Evaluate(Environment &rEnvironment) const {
-	Closure const &rLeftResult = m_pLeft->Evaluate(rEnvironment);
+	Ptr<Closure const> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
 	Closure const &rRightResult = m_pRight->Evaluate(rEnvironment);
-	AugmentEnvironment AugmentEnvironment(rEnvironment, rLeftResult.m_strArgument, rRightResult);
-	return rLeftResult.m_pBody->Evaluate(rEnvironment);
+	AugmentEnvironment AugmentEnvironment(rEnvironment, pLeftResult->m_strArgument, rRightResult);
+	return pLeftResult->m_pBody->Evaluate(rEnvironment);
 }

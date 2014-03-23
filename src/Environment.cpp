@@ -38,6 +38,9 @@ Closure const &Environment::Pop(string const &rstrName) {
 		assert(rStack.size() > 0);
 		Closure const &rClosure = *(rStack.top());
 		rStack.pop();
+		if (rStack.empty()) {
+			m_Map.erase(rstrName);
+		}
 		return rClosure;
 	} else {
 		throw InternalError();
