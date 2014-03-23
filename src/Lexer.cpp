@@ -5,7 +5,7 @@
 Lexer::Lexer(istream &a_ris)
 	:
 m_ris(a_ris) {
-	m_ris.exceptions(ios::failbit);
+	m_ris.exceptions(ios::badbit);
 	Next();
 }
 
@@ -21,19 +21,7 @@ bool Lexer::End() const {
 
 
 bool Lexer::HasNext() const {
-	while (true) {
-		int const ch = m_ris.peek();
-		if (ch < 0) {
-			return false;
-		} else if (ch > 127) {
-			throw InvalidCharacterException();
-		} else if (::isspace(ch)) {
-			m_ris.get();
-			continue;
-		} else {
-			return true;
-		}
-	}
+	return m_Token != TOKEN_END;
 }
 
 
@@ -41,7 +29,7 @@ Lexer::Token Lexer::Next() {
 	if (m_Buffer.size()) {
 		Token const Token = m_Buffer.top();
 		m_Buffer.pop();
-		return Token;
+		return m_Token = Token;
 	} else {
 		while (true) {
 			int const ch = m_ris.get();
@@ -51,15 +39,11 @@ Lexer::Token Lexer::Next() {
 				throw InvalidCharacterException();
 			} else if (::isspace(ch)) {
 				continue;
-			} else if (::isalpha(ch)) {
+			} else if (::isalpha(ch) || ch == '_') {
 				string str(1, (unsigned char)ch);
 				while (true) {
 					int const ch = m_ris.peek();
-					if (ch < 0) {
-						break;
-					} else if (ch > 127) {
-						throw InvalidCharacterException();
-					} else if (::isalnum(ch)) {
+					if (::isalnum(ch) || ch == '_') {
 						m_ris.get();
 						str += (unsigned char)ch;
 					} else {

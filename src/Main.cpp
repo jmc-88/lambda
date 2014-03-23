@@ -16,11 +16,11 @@ int main() {
 			Ptr<Closure const> pResult = &(Scanner.Scan()->Evaluate());
 			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
-			cerr << "      > syntax error" << endl;
+			cerr << "syntax error" << endl;
 		} catch (InternalError const &re) {
-			cerr << "      > internal error" << endl;
+			cerr << "internal error" << endl;
 		} catch (Environment::NotFoundException const &re) {
-			cerr << "      > variable not found: " << re.m_strName << endl;
+			cerr << "variable not found: " << re.m_strName << endl;
 		}
 		// TODO
 	}

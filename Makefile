@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall -pedantic -std=c++11 -Iinc
+CXXFLAGS+=-Wall -pedantic -std=c++11 -Iinc
 
 all : bin/lambda
 
