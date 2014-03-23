@@ -99,14 +99,14 @@ ApplicationNode *ApplicationNode::Clone() const {
 
 
 AbstractValue &ApplicationNode::Evaluate(Environment &rEnvironment) const {
-	Ptr<AbstractValue> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
-	if (pLeftResult->m_Type != AbstractValue::TYPE_CLOSURE) {
+	AbstractValue &rLeftResult = m_pLeft->Evaluate(rEnvironment);
+	if (rLeftResult.m_Type != AbstractValue::TYPE_CLOSURE) {
 		throw RuntimeError();
 	} else {
-		Ptr<Closure> pClosure = (Closure*)(pLeftResult.Detach());
+		Closure &rClosure = (Closure&)rLeftResult;
 		AbstractValue &rRightResult = m_pRight->Evaluate(rEnvironment);
-		AugmentEnvironment AugmentEnvironment(pClosure->m_Environment, pClosure->m_strArgument, rRightResult);
-		return pClosure->m_pBody->Evaluate(pClosure->m_Environment);
+		AugmentEnvironment AugmentEnvironment(rClosure.m_Environment, rClosure.m_strArgument, rRightResult);
+		return rClosure.m_pBody->Evaluate(rClosure.m_Environment);
 	}
 }
 
