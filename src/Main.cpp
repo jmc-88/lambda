@@ -12,7 +12,9 @@ int main() {
 		Lexer Lexer(iss);
 		Scanner Scanner(Lexer);
 		try {
-			cout << "      > " << Scanner.Scan()->Evaluate() << endl;
+			cout << "      > " << flush;
+			Ptr<Closure const> pResult = &(Scanner.Scan()->Evaluate());
+			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "      > syntax error" << endl;
 		} catch (InternalError const &re) {
