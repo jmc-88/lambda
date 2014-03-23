@@ -19,11 +19,6 @@ m_strName(a_rstrName) {}
 VariableNode::~VariableNode() {}
 
 
-VariableNode::operator string const () const {
-	return m_strName;
-}
-
-
 VariableNode *VariableNode::Clone() const {
 	return new VariableNode(m_strName);
 }
@@ -31,6 +26,15 @@ VariableNode *VariableNode::Clone() const {
 
 Closure &VariableNode::Evaluate(Environment &rEnvironment) const {
 	return rEnvironment[m_strName];
+}
+
+
+string const VariableNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	if (rEnvironment.Has(m_strName)) {
+		return (string const)(rEnvironment[m_strName]);
+	} else {
+		return m_strName;
+	}
 }
 
 
@@ -44,17 +48,6 @@ m_Arguments(move(a_rrArguments)),
 
 
 FunctionNode::~FunctionNode() {}
-
-
-FunctionNode::operator string const () const {
-	assert(m_Arguments.size() > 0);
-	auto it = m_Arguments.begin();
-	string str = "lambda " + *it;
-	for (++it; it != m_Arguments.end(); ++it) {
-		str += ", " + *it;
-	}
-	return str += " . " + (string const)*m_pBody;
-}
 
 
 FunctionNode *FunctionNode::Clone() const {
@@ -75,6 +68,21 @@ Closure &FunctionNode::Evaluate(Environment &rEnvironment) const {
 }
 
 
+string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	assert(m_Arguments.size() > 0);
+	auto it = m_Arguments.begin();
+	string str = "lambda " + *it;
+	for (++it; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	set<string> Names;
+	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
+		Names.insert(*it);
+	}
+	return str += " . " + m_pBody->ToString(OverrideEnvironment(rEnvironment, move(Names)));
+}
+
+
 ApplicationNode::ApplicationNode(Ptr<AbstractNode const> &&a_rrpLeft, Ptr<AbstractNode const> &&a_rrpRight)
 	:
 m_pLeft(move(a_rrpLeft)),
@@ -82,11 +90,6 @@ m_pLeft(move(a_rrpLeft)),
 
 
 ApplicationNode::~ApplicationNode() {}
-
-
-ApplicationNode::operator string const () const {
-	return (string const)*m_pLeft + " " + (string const)*m_pRight;
-}
 
 
 ApplicationNode *ApplicationNode::Clone() const {
@@ -99,4 +102,9 @@ Closure &ApplicationNode::Evaluate(Environment &rEnvironment) const {
 	Closure &rRightResult = m_pRight->Evaluate(rEnvironment);
 	AugmentEnvironment AugmentEnvironment(pLeftResult->m_Environment, pLeftResult->m_strArgument, rRightResult);
 	return pLeftResult->m_pBody->Evaluate(pLeftResult->m_Environment);
+}
+
+
+string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	return "(" + m_pLeft->ToString(rEnvironment) + ")(" + m_pRight->ToString(rEnvironment) + ")";
 }

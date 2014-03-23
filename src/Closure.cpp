@@ -11,7 +11,7 @@ m_strArgument(a_rstrArgument),
 
 
 Closure::operator string const () const {
-	return "lambda " + m_strArgument + " . " + (string const)*m_pBody;
+	return "lambda " + m_strArgument + " . " + m_pBody->ToString(m_Environment);
 }
 
 

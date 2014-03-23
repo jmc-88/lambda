@@ -8,9 +8,9 @@ struct AbstractNode :
 	public Clonable
 {
 	virtual ~AbstractNode();
-	virtual operator string const () const = 0;
 	virtual AbstractNode *Clone() const = 0;
 	virtual Closure &Evaluate(Environment &rEnvironment) const = 0;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const = 0;
 
 	Closure &Evaluate() const;
 };
@@ -24,9 +24,9 @@ struct VariableNode :
 	explicit VariableNode(string const &a_rstrName);
 	virtual ~VariableNode();
 
-	virtual operator string const () const;
 	virtual VariableNode *Clone() const;
 	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
 
 
@@ -39,9 +39,9 @@ struct FunctionNode :
 	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~FunctionNode();
 
-	virtual operator string const () const;
 	virtual FunctionNode *Clone() const;
 	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
 
 
@@ -54,7 +54,7 @@ struct ApplicationNode :
 	ApplicationNode(Ptr<AbstractNode const> &&a_rrpLeft, Ptr<AbstractNode const> &&a_rrpRight);
 	virtual ~ApplicationNode();
 
-	virtual operator string const () const;
 	virtual ApplicationNode *Clone() const;
 	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };

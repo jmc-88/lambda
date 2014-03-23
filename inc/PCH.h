@@ -8,6 +8,7 @@
 #include <stack>
 #include <map>
 #include <vector>
+#include <set>
 
 #include <Ptr.h>
 #include <Clonable.h>
