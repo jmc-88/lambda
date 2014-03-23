@@ -9,7 +9,7 @@ struct AbstractNode :
 {
 	virtual ~AbstractNode();
 	virtual AbstractNode *Clone() const = 0;
-	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const = 0;
+	virtual Closure const &Evaluate(Environment &rEnvironment) const = 0;
 };
 
 
@@ -22,7 +22,7 @@ struct VariableNode :
 	virtual ~VariableNode();
 
 	virtual VariableNode *Clone() const;
-	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
+	virtual Closure const &Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -36,7 +36,7 @@ struct FunctionNode :
 	virtual ~FunctionNode();
 
 	virtual FunctionNode *Clone() const;
-	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
+	virtual Closure const &Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -50,5 +50,5 @@ struct ApplicationNode :
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
-	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
+	virtual Closure const &Evaluate(Environment &rEnvironment) const;
 };

@@ -18,6 +18,6 @@ VariableNode *VariableNode::Clone() const {
 }
 
 
-Ptr<AbstractNode const> VariableNode::Evaluate(Environment &rEnvironment) const {
-	// TODO
+Closure const &VariableNode::Evaluate(Environment &rEnvironment) const {
+	return rEnvironment[m_strName];
 }
