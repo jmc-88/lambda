@@ -11,6 +11,11 @@ Environment::Environment(map<string, Closure const*> &&a_rrMap) {
 }
 
 
+Environment::NotFoundException::NotFoundException(string const &a_rstrName)
+	:
+m_strName(a_rstrName) {}
+
+
 Closure const &Environment::operator [] (string const &rstrName) const {
 	if (m_Map.count(rstrName)) {
 		return *(m_Map.at(rstrName).top());
@@ -44,4 +49,18 @@ map<string, Closure const*> Environment::Capture() const {
 		Result[it->first] = it->second.top();
 	}
 	return Result;
+}
+
+
+AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure const &a_rClosure)
+	:
+m_rEnvironment(a_rEnvironment),
+	m_strName(a_rstrName)
+{
+	m_rEnvironment.Push(m_strName, a_rClosure);
+}
+
+
+AugmentEnvironment::~AugmentEnvironment() {
+	m_rEnvironment.Pop(m_strName);
 }
