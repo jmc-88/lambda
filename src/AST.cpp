@@ -5,6 +5,12 @@
 AbstractNode::~AbstractNode() {}
 
 
+Closure const &AbstractNode::Evaluate() const {
+	Environment Environment;
+	return Evaluate(Environment);
+}
+
+
 VariableNode::VariableNode(string const &a_rstrName)
 	:
 m_strName(a_rstrName) {}

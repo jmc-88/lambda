@@ -10,6 +10,8 @@ Environment::Environment(map<string, Closure const*> &&a_rrMap) {
 	}
 }
 
+Environment::Environment() {}
+
 
 Environment::NotFoundException::NotFoundException(string const &a_rstrName)
 	:

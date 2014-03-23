@@ -9,6 +9,7 @@ private:
 
 public:
 	explicit Environment(map<string, Closure const*> &&a_rrMap);
+	Environment();
 
 	struct NotFoundException {
 		string const m_strName;

@@ -11,6 +11,8 @@ struct AbstractNode :
 	virtual operator string const () const = 0;
 	virtual AbstractNode *Clone() const = 0;
 	virtual Closure const &Evaluate(Environment &rEnvironment) const = 0;
+
+	Closure const &Evaluate() const;
 };
 
 
