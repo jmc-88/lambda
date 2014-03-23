@@ -13,6 +13,11 @@ m_strName(a_rstrName) {}
 VariableNode::~VariableNode() {}
 
 
+VariableNode::operator string const () const {
+	return m_strName;
+}
+
+
 VariableNode *VariableNode::Clone() const {
 	return new VariableNode(m_strName);
 }
@@ -32,6 +37,11 @@ m_strArgumentName(a_rstrArgumentName),
 FunctionNode::~FunctionNode() {}
 
 
+FunctionNode::operator string const () const {
+	return "lambda " + m_strArgumentName + " . " + (string const)*m_pBody;
+}
+
+
 FunctionNode *FunctionNode::Clone() const {
 	return new FunctionNode(m_strArgumentName, m_pBody->Clone());
 }
@@ -49,6 +59,11 @@ m_pLeft(move(a_rrpLeft)),
 
 
 ApplicationNode::~ApplicationNode() {}
+
+
+ApplicationNode::operator string const () const {
+	return (string const)*m_pLeft + " " + (string const)*m_pRight;
+}
 
 
 ApplicationNode *ApplicationNode::Clone() const {

@@ -10,4 +10,9 @@ struct Closure {
 	map<string, Closure const*> m_Capture;
 
 	Closure(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody, Environment const &rEnvironment);
+
+	operator string const () const;
 };
+
+
+ostream &operator << (ostream &ros, Closure const &rClosure);
