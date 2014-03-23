@@ -26,6 +26,7 @@ Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
 		if (m_rLexer.Next() != Lexer::TOKEN_POINT) {
 			throw SyntaxError();
 		} else {
+			m_rLexer.Next();
 			return new FunctionNode(strArgumentName, ScanApplication(Terminator));
 		}
 	}
@@ -39,6 +40,7 @@ Ptr<AbstractNode const> Scanner::ScanParens() {
 	if (m_rLexer.Current() != Lexer::TOKEN_RIGHT_PARENS) {
 		throw SyntaxError();
 	} else {
+		m_rLexer.Next();
 		return pSubTerm;
 	}
 }

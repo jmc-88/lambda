@@ -22,7 +22,6 @@ int main() {
 		} catch (Environment::NotFoundException const &re) {
 			cerr << "variable not found: " << re.m_strName << endl;
 		}
-		// TODO
 	}
 	return 0;
 }
