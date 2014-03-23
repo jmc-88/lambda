@@ -63,6 +63,8 @@ Lexer::Token Lexer::Next() {
 					return m_Token = TOKEN_LEFT_PARENS;
 				case ')':
 					return m_Token = TOKEN_RIGHT_PARENS;
+				case ',':
+					return m_Token = TOKEN_COMMA;
 				case '.':
 					return m_Token = TOKEN_POINT;
 				default:

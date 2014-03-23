@@ -33,10 +33,10 @@ struct VariableNode :
 struct FunctionNode :
 	public AbstractNode
 {
-	string m_strArgumentName;
+	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
 
-	FunctionNode(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody);
+	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~FunctionNode();
 
 	virtual operator string const () const;

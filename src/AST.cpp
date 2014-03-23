@@ -34,27 +34,44 @@ Closure const &VariableNode::Evaluate(Environment &rEnvironment) const {
 }
 
 
-FunctionNode::FunctionNode(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody)
+FunctionNode::FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
-m_strArgumentName(a_rstrArgumentName),
-	m_pBody(move(a_rrpBody)) {}
+m_Arguments(move(a_rrArguments)),
+	m_pBody(move(a_rrpBody))
+{
+	assert(m_Arguments.size() > 0);
+}
 
 
 FunctionNode::~FunctionNode() {}
 
 
 FunctionNode::operator string const () const {
-	return "lambda " + m_strArgumentName + " . " + (string const)*m_pBody;
+	assert(m_Arguments.size() > 0);
+	auto it = m_Arguments.begin();
+	string str = "lambda " + *it;
+	for (++it; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	return str += " . " + (string const)*m_pBody;
 }
 
 
 FunctionNode *FunctionNode::Clone() const {
-	return new FunctionNode(m_strArgumentName, m_pBody->Clone());
+	return new FunctionNode(vector<string>(m_Arguments), m_pBody->Clone());
 }
 
 
 Closure const &FunctionNode::Evaluate(Environment &rEnvironment) const {
-	return *new Closure(m_strArgumentName, m_pBody->Clone(), rEnvironment);
+	if (m_Arguments.size() > 1) {
+		vector<string> SubArguments;
+		for (auto it = ++(m_Arguments.begin()); it != m_Arguments.end(); ++it) {
+			SubArguments.push_back(*it);
+		}
+		return *new Closure(*(m_Arguments.begin()), new FunctionNode(move(SubArguments), m_pBody->Clone()), rEnvironment);
+	} else {
+		return *new Closure(*(m_Arguments.begin()), m_pBody->Clone(), rEnvironment);
+	}
 }
 
 

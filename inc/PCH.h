@@ -7,6 +7,7 @@
 #include <sstream>
 #include <stack>
 #include <map>
+#include <vector>
 
 #include <Ptr.h>
 #include <Clonable.h>
