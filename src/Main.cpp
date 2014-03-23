@@ -12,7 +12,7 @@ int main() {
 		Lexer Lexer(iss);
 		Scanner Scanner(Lexer);
 		try {
-			cout << "      > " << flush;
+			cout << "      = " << flush;
 			Ptr<Closure const> pResult = &(Scanner.Scan()->Evaluate());
 			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
@@ -23,5 +23,4 @@ int main() {
 			cerr << "variable not found: " << re.m_strName << endl;
 		}
 	}
-	return 0;
 }
