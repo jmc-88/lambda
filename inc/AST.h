@@ -7,10 +7,9 @@
 struct AbstractNode :
 	public Clonable
 {
-	virtual AbstractNode Clone() const = 0;
-	virtual Ptr<AbstractNode> Reduce() const = 0;
-	virtual Ptr<AbstractNode> ReduceOrClone() const = 0;
-	virtual Ptr<Closure const> Evaluate(Environment &rEnvironment) const = 0;
+	virtual ~AbstractNode();
+	virtual AbstractNode *Clone() const = 0;
+	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const = 0;
 };
 
 
@@ -20,11 +19,10 @@ struct VariableNode :
 	string m_strName;
 
 	explicit VariableNode(string const &a_rstrName);
+	virtual ~VariableNode();
 
-	virtual AbstractNode Clone() const;
-	virtual Ptr<AbstractNode> Reduce() const;
-	virtual Ptr<AbstractNode> ReduceOrClone() const;
-	virtual Ptr<Closure const> Evaluate(Environment &rEnvironment) const;
+	virtual VariableNode *Clone() const;
+	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -35,11 +33,10 @@ struct FunctionNode :
 	Ptr<AbstractNode const> m_pBody;
 
 	FunctionNode(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody);
+	virtual ~FunctionNode();
 
-	virtual AbstractNode Clone() const;
-	virtual Ptr<AbstractNode> Reduce() const;
-	virtual Ptr<AbstractNode> ReduceOrClone() const;
-	virtual Ptr<Closure const> Evaluate(Environment &rEnvironment) const;
+	virtual FunctionNode *Clone() const;
+	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -50,9 +47,8 @@ struct ApplicationNode :
 	Ptr<AbstractNode const> m_pRight;
 
 	ApplicationNode(Ptr<AbstractNode const> &&a_rrpLeft, Ptr<AbstractNode const> &&a_rrpRight);
+	virtual ~ApplicationNode();
 
-	virtual AbstractNode Clone() const;
-	virtual Ptr<AbstractNode> Reduce() const;
-	virtual Ptr<AbstractNode> ReduceOrClone() const;
-	virtual Ptr<Closure const> Evaluate(Environment &rEnvironment) const;
+	virtual ApplicationNode *Clone() const;
+	virtual Ptr<AbstractNode const> Evaluate(Environment &rEnvironment) const;
 };

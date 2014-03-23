@@ -2,6 +2,7 @@
 
 
 struct AbstractNode;
+struct Environment;
 
 struct Closure {
 	string const m_strArgumentName;
@@ -9,5 +10,5 @@ struct Closure {
 
 	// TODO environment
 
-	Closure(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody)
+	Closure(string const &a_rstrArgumentName, Ptr<AbstractNode const> &&a_rrpBody);
 };

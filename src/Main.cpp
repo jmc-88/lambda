@@ -10,6 +10,7 @@ int main() {
 		istringstream iss(strLine);
 		Lexer Lexer(iss);
 		Scanner Scanner(Lexer);
+		Ptr<AbstractNode const> pRoot = Scanner.Scan();
 		// TODO
 	}
 	return 0;

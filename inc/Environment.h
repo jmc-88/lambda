@@ -1,12 +1,14 @@
 #pragma once
 
+#include <Closure.h>
+
 
 struct Environment {
 private:
 	map<string const, stack<Closure const>> m_Map;
 
 public:
-	explicit Environment(map<string const, Ptr<Closure const> &&a_rrMap);
+	explicit Environment(map<string const, Ptr<Closure const>> &&a_rrMap);
 
 	struct NotFoundException {
 		string const m_strName;
