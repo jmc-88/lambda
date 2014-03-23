@@ -1,14 +1,14 @@
 #pragma once
 
-#include <Closure.h>
 
+struct Closure;
 
 struct Environment {
 private:
-	map<string, stack<Closure const*>> m_Map;
+	map<string, stack<Closure*>> m_Map;
 
 public:
-	explicit Environment(map<string, Closure const*> &&a_rrMap);
+	explicit Environment(map<string, Closure*> &&a_rrMap);
 	Environment();
 
 	struct NotFoundException {
@@ -16,11 +16,11 @@ public:
 		explicit NotFoundException(string const &a_rstrName);
 	};
 
-	Closure const &operator [] (string const &rstrName) const;
-	void Push(string const &rstrName, Closure const &rClosure);
-	Closure const &Pop(string const &rstrName);
+	Closure &operator [] (string const &rstrName) const;
+	void Push(string const &rstrName, Closure &rClosure);
+	Closure &Pop(string const &rstrName);
 
-	map<string, Closure const*> Capture() const;
+	map<string, Closure*> Capture() const;
 };
 
 
@@ -28,6 +28,6 @@ struct AugmentEnvironment {
 	Environment &m_rEnvironment;
 	string const m_strName;
 
-	AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure const &a_rClosure);
+	AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure &a_rClosure);
 	virtual ~AugmentEnvironment();
 };

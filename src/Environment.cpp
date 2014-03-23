@@ -1,10 +1,10 @@
 #include <PCH.h>
 #include <Environment.h>
-#include <AST.h>
+#include <Closure.h>
 #include <Error.h>
 
 
-Environment::Environment(map<string, Closure const*> &&a_rrMap) {
+Environment::Environment(map<string, Closure*> &&a_rrMap) {
 	for (auto it = a_rrMap.begin(); it != a_rrMap.end(); ++it) {
 		m_Map[it->first].push(move(it->second));
 	}
@@ -18,7 +18,7 @@ Environment::NotFoundException::NotFoundException(string const &a_rstrName)
 m_strName(a_rstrName) {}
 
 
-Closure const &Environment::operator [] (string const &rstrName) const {
+Closure &Environment::operator [] (string const &rstrName) const {
 	if (m_Map.count(rstrName)) {
 		return *(m_Map.at(rstrName).top());
 	} else {
@@ -27,16 +27,16 @@ Closure const &Environment::operator [] (string const &rstrName) const {
 }
 
 
-void Environment::Push(string const &rstrName, Closure const &rClosure) {
+void Environment::Push(string const &rstrName, Closure &rClosure) {
 	m_Map[rstrName].push(&rClosure);
 }
 
 
-Closure const &Environment::Pop(string const &rstrName) {
+Closure &Environment::Pop(string const &rstrName) {
 	if (m_Map.count(rstrName)) {
-		stack<Closure const*> &rStack = m_Map[rstrName];
+		stack<Closure*> &rStack = m_Map[rstrName];
 		assert(rStack.size() > 0);
-		Closure const &rClosure = *(rStack.top());
+		Closure &rClosure = *(rStack.top());
 		rStack.pop();
 		if (rStack.empty()) {
 			m_Map.erase(rstrName);
@@ -48,8 +48,8 @@ Closure const &Environment::Pop(string const &rstrName) {
 }
 
 
-map<string, Closure const*> Environment::Capture() const {
-	map<string, Closure const*> Result;
+map<string, Closure*> Environment::Capture() const {
+	map<string, Closure*> Result;
 	for (auto it = m_Map.begin(); it != m_Map.end(); ++it) {
 		Result[it->first] = it->second.top();
 	}
@@ -57,7 +57,7 @@ map<string, Closure const*> Environment::Capture() const {
 }
 
 
-AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure const &a_rClosure)
+AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure &a_rClosure)
 	:
 m_rEnvironment(a_rEnvironment),
 	m_strName(a_rstrName)

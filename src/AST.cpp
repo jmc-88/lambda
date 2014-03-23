@@ -5,7 +5,7 @@
 AbstractNode::~AbstractNode() {}
 
 
-Closure const &AbstractNode::Evaluate() const {
+Closure &AbstractNode::Evaluate() const {
 	Environment Environment;
 	return Evaluate(Environment);
 }
@@ -29,7 +29,7 @@ VariableNode *VariableNode::Clone() const {
 }
 
 
-Closure const &VariableNode::Evaluate(Environment &rEnvironment) const {
+Closure &VariableNode::Evaluate(Environment &rEnvironment) const {
 	return rEnvironment[m_strName];
 }
 
@@ -62,7 +62,7 @@ FunctionNode *FunctionNode::Clone() const {
 }
 
 
-Closure const &FunctionNode::Evaluate(Environment &rEnvironment) const {
+Closure &FunctionNode::Evaluate(Environment &rEnvironment) const {
 	if (m_Arguments.size() > 1) {
 		vector<string> SubArguments;
 		for (auto it = ++(m_Arguments.begin()); it != m_Arguments.end(); ++it) {
@@ -94,9 +94,9 @@ ApplicationNode *ApplicationNode::Clone() const {
 }
 
 
-Closure const &ApplicationNode::Evaluate(Environment &rEnvironment) const {
-	Ptr<Closure const> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
-	Closure const &rRightResult = m_pRight->Evaluate(rEnvironment);
-	AugmentEnvironment AugmentEnvironment(rEnvironment, pLeftResult->m_strArgument, rRightResult);
-	return pLeftResult->m_pBody->Evaluate(rEnvironment);
+Closure &ApplicationNode::Evaluate(Environment &rEnvironment) const {
+	Ptr<Closure> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
+	Closure &rRightResult = m_pRight->Evaluate(rEnvironment);
+	AugmentEnvironment AugmentEnvironment(pLeftResult->m_Environment, pLeftResult->m_strArgument, rRightResult);
+	return pLeftResult->m_pBody->Evaluate(pLeftResult->m_Environment);
 }

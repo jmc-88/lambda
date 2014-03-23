@@ -10,9 +10,9 @@ struct AbstractNode :
 	virtual ~AbstractNode();
 	virtual operator string const () const = 0;
 	virtual AbstractNode *Clone() const = 0;
-	virtual Closure const &Evaluate(Environment &rEnvironment) const = 0;
+	virtual Closure &Evaluate(Environment &rEnvironment) const = 0;
 
-	Closure const &Evaluate() const;
+	Closure &Evaluate() const;
 };
 
 
@@ -26,7 +26,7 @@ struct VariableNode :
 
 	virtual operator string const () const;
 	virtual VariableNode *Clone() const;
-	virtual Closure const &Evaluate(Environment &rEnvironment) const;
+	virtual Closure &Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -41,7 +41,7 @@ struct FunctionNode :
 
 	virtual operator string const () const;
 	virtual FunctionNode *Clone() const;
-	virtual Closure const &Evaluate(Environment &rEnvironment) const;
+	virtual Closure &Evaluate(Environment &rEnvironment) const;
 };
 
 
@@ -56,5 +56,5 @@ struct ApplicationNode :
 
 	virtual operator string const () const;
 	virtual ApplicationNode *Clone() const;
-	virtual Closure const &Evaluate(Environment &rEnvironment) const;
+	virtual Closure &Evaluate(Environment &rEnvironment) const;
 };
