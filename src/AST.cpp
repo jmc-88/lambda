@@ -1,11 +1,12 @@
 #include <PCH.h>
 #include <AST.h>
+#include <Error.h>
 
 
 AbstractNode::~AbstractNode() {}
 
 
-Closure &AbstractNode::Evaluate() const {
+AbstractValue &AbstractNode::Evaluate() const {
 	Environment Environment;
 	return Evaluate(Environment);
 }
@@ -24,7 +25,7 @@ VariableNode *VariableNode::Clone() const {
 }
 
 
-Closure &VariableNode::Evaluate(Environment &rEnvironment) const {
+AbstractValue &VariableNode::Evaluate(Environment &rEnvironment) const {
 	return rEnvironment[m_strName];
 }
 
@@ -55,7 +56,7 @@ FunctionNode *FunctionNode::Clone() const {
 }
 
 
-Closure &FunctionNode::Evaluate(Environment &rEnvironment) const {
+AbstractValue &FunctionNode::Evaluate(Environment &rEnvironment) const {
 	if (m_Arguments.size() > 1) {
 		vector<string> SubArguments;
 		for (auto it = ++(m_Arguments.begin()); it != m_Arguments.end(); ++it) {
@@ -97,11 +98,16 @@ ApplicationNode *ApplicationNode::Clone() const {
 }
 
 
-Closure &ApplicationNode::Evaluate(Environment &rEnvironment) const {
-	Ptr<Closure> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
-	Closure &rRightResult = m_pRight->Evaluate(rEnvironment);
-	AugmentEnvironment AugmentEnvironment(pLeftResult->m_Environment, pLeftResult->m_strArgument, rRightResult);
-	return pLeftResult->m_pBody->Evaluate(pLeftResult->m_Environment);
+AbstractValue &ApplicationNode::Evaluate(Environment &rEnvironment) const {
+	Ptr<AbstractValue> pLeftResult = &(m_pLeft->Evaluate(rEnvironment));
+	if (pLeftResult->m_Type != AbstractValue::TYPE_CLOSURE) {
+		throw RuntimeError();
+	} else {
+		Ptr<Closure> pClosure = (Closure*)(pLeftResult.Detach());
+		AbstractValue &rRightResult = m_pRight->Evaluate(rEnvironment);
+		AugmentEnvironment AugmentEnvironment(pClosure->m_Environment, pClosure->m_strArgument, rRightResult);
+		return pClosure->m_pBody->Evaluate(pClosure->m_Environment);
+	}
 }
 
 

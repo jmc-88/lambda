@@ -13,7 +13,7 @@ int main() {
 		Scanner Scanner(Lexer);
 		try {
 			cout << "      = " << flush;
-			Ptr<Closure const> pResult = &(Scanner.Scan()->Evaluate());
+			Ptr<AbstractValue const> pResult = &(Scanner.Scan()->Evaluate());
 			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "syntax error" << endl;

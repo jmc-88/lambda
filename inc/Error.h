@@ -15,3 +15,9 @@ struct SyntaxError :
 	public Error
 {
 };
+
+
+struct RuntimeError :
+	public Error
+{
+};

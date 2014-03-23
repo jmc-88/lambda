@@ -1,7 +1,7 @@
 #pragma once
 
 
-struct Closure;
+struct AbstractValue;
 
 struct AbstractEnvironment {
 	struct NotFoundException {
@@ -9,7 +9,7 @@ struct AbstractEnvironment {
 		explicit NotFoundException(string const &a_rstrName);
 	};
 
-	virtual Closure &operator [] (string const &rstrName) const = 0;
+	virtual AbstractValue &operator [] (string const &rstrName) const = 0;
 	virtual bool Has(string const &rstrName) const = 0;
 };
 
@@ -18,18 +18,18 @@ struct Environment :
 	public AbstractEnvironment
 {
 private:
-	map<string, stack<Closure*>> m_Map;
+	map<string, stack<AbstractValue*>> m_Map;
 
 public:
-	explicit Environment(map<string, Closure*> &&a_rrMap);
+	explicit Environment(map<string, AbstractValue*> &&a_rrMap);
 	Environment();
 
-	virtual Closure &operator [] (string const &rstrName) const;
+	virtual AbstractValue &operator [] (string const &rstrName) const;
 	virtual bool Has(string const &rstrName) const;
-	void Push(string const &rstrName, Closure &rClosure);
-	Closure &Pop(string const &rstrName);
+	void Push(string const &rstrName, AbstractValue &rValue);
+	AbstractValue &Pop(string const &rstrName);
 
-	map<string, Closure*> Capture() const;
+	map<string, AbstractValue*> Capture() const;
 };
 
 
@@ -41,7 +41,7 @@ struct OverrideEnvironment :
 
 	OverrideEnvironment(AbstractEnvironment const &a_rOriginalEnvironment, set<string> &&a_rrNames);
 
-	virtual Closure &operator [] (string const &rstrName) const;
+	virtual AbstractValue &operator [] (string const &rstrName) const;
 	virtual bool Has(string const &rstrName) const;
 };
 
@@ -50,6 +50,6 @@ struct AugmentEnvironment {
 	Environment &m_rEnvironment;
 	string const m_strName;
 
-	AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure &a_rClosure);
+	AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, AbstractValue &a_rValue);
 	virtual ~AugmentEnvironment();
 };

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Environment.h>
-#include <Closure.h>
+#include <Values.h>
 
 
 struct AbstractNode :
@@ -9,10 +9,10 @@ struct AbstractNode :
 {
 	virtual ~AbstractNode();
 	virtual AbstractNode *Clone() const = 0;
-	virtual Closure &Evaluate(Environment &rEnvironment) const = 0;
+	virtual AbstractValue &Evaluate(Environment &rEnvironment) const = 0;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const = 0;
 
-	Closure &Evaluate() const;
+	AbstractValue &Evaluate() const;
 };
 
 
@@ -25,7 +25,7 @@ struct VariableNode :
 	virtual ~VariableNode();
 
 	virtual VariableNode *Clone() const;
-	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual AbstractValue &Evaluate(Environment &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
 
@@ -40,7 +40,7 @@ struct FunctionNode :
 	virtual ~FunctionNode();
 
 	virtual FunctionNode *Clone() const;
-	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual AbstractValue &Evaluate(Environment &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
 
@@ -55,6 +55,6 @@ struct ApplicationNode :
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
-	virtual Closure &Evaluate(Environment &rEnvironment) const;
+	virtual AbstractValue &Evaluate(Environment &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };

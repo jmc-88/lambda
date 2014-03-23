@@ -1,6 +1,6 @@
 #include <PCH.h>
 #include <Environment.h>
-#include <Closure.h>
+#include <Values.h>
 #include <Error.h>
 
 
@@ -9,7 +9,7 @@ AbstractEnvironment::NotFoundException::NotFoundException(string const &a_rstrNa
 m_strName(a_rstrName) {}
 
 
-Environment::Environment(map<string, Closure*> &&a_rrMap) {
+Environment::Environment(map<string, AbstractValue*> &&a_rrMap) {
 	for (auto it = a_rrMap.begin(); it != a_rrMap.end(); ++it) {
 		m_Map[it->first].push(move(it->second));
 	}
@@ -18,7 +18,7 @@ Environment::Environment(map<string, Closure*> &&a_rrMap) {
 Environment::Environment() {}
 
 
-Closure &Environment::operator [] (string const &rstrName) const {
+AbstractValue &Environment::operator [] (string const &rstrName) const {
 	if (m_Map.count(rstrName)) {
 		return *(m_Map.at(rstrName).top());
 	} else {
@@ -32,29 +32,29 @@ bool Environment::Has(string const &rstrName) const {
 }
 
 
-void Environment::Push(string const &rstrName, Closure &rClosure) {
-	m_Map[rstrName].push(&rClosure);
+void Environment::Push(string const &rstrName, AbstractValue &rValue) {
+	m_Map[rstrName].push(&rValue);
 }
 
 
-Closure &Environment::Pop(string const &rstrName) {
+AbstractValue &Environment::Pop(string const &rstrName) {
 	if (m_Map.count(rstrName)) {
-		stack<Closure*> &rStack = m_Map[rstrName];
+		stack<AbstractValue*> &rStack = m_Map[rstrName];
 		assert(rStack.size() > 0);
-		Closure &rClosure = *(rStack.top());
+		AbstractValue &rValue = *(rStack.top());
 		rStack.pop();
 		if (rStack.empty()) {
 			m_Map.erase(rstrName);
 		}
-		return rClosure;
+		return rValue;
 	} else {
 		throw InternalError();
 	}
 }
 
 
-map<string, Closure*> Environment::Capture() const {
-	map<string, Closure*> Result;
+map<string, AbstractValue*> Environment::Capture() const {
+	map<string, AbstractValue*> Result;
 	for (auto it = m_Map.begin(); it != m_Map.end(); ++it) {
 		Result[it->first] = it->second.top();
 	}
@@ -68,7 +68,7 @@ m_rOriginalEnvironment(a_rOriginalEnvironment),
 	m_Names(move(a_rrNames)) {}
 
 
-Closure &OverrideEnvironment::operator [] (string const &rstrName) const {
+AbstractValue &OverrideEnvironment::operator [] (string const &rstrName) const {
 	if (m_Names.count(rstrName)) {
 		throw NotFoundException(rstrName);
 	} else {
@@ -82,12 +82,12 @@ bool OverrideEnvironment::Has(string const &rstrName) const {
 }
 
 
-AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, Closure &a_rClosure)
+AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, AbstractValue &a_rValue)
 	:
 m_rEnvironment(a_rEnvironment),
 	m_strName(a_rstrName)
 {
-	m_rEnvironment.Push(m_strName, a_rClosure);
+	m_rEnvironment.Push(m_strName, a_rValue);
 }
 
 
