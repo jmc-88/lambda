@@ -4,11 +4,6 @@
 #include <Error.h>
 
 
-AbstractEnvironment::NotFoundException::NotFoundException(string const &a_rstrName)
-	:
-m_strName(a_rstrName) {}
-
-
 Environment::Environment(map<string, AbstractValue*> &&a_rrMap) {
 	for (auto it = a_rrMap.begin(); it != a_rrMap.end(); ++it) {
 		m_Map[it->first].push(move(it->second));
@@ -22,7 +17,7 @@ AbstractValue &Environment::operator [] (string const &rstrName) const {
 	if (m_Map.count(rstrName)) {
 		return *(m_Map.at(rstrName).top());
 	} else {
-		throw NotFoundException(rstrName);
+		throw RuntimeError();
 	}
 }
 
@@ -70,7 +65,7 @@ m_rOriginalEnvironment(a_rOriginalEnvironment),
 
 AbstractValue &OverrideEnvironment::operator [] (string const &rstrName) const {
 	if (m_Names.count(rstrName)) {
-		throw NotFoundException(rstrName);
+		throw RuntimeError();
 	} else {
 		return m_rOriginalEnvironment[rstrName];
 	}

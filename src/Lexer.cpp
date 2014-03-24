@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include <Lexer.h>
+#include <Error.h>
 
 
 Lexer::Lexer(istream &a_ris)
@@ -36,7 +37,7 @@ Lexer::Token Lexer::Next() {
 			if (ch < 0) {
 				return m_Token = TOKEN_END;
 			} else if (ch > 127) {
-				throw InvalidCharacterException();
+				throw SyntaxError();
 			} else if (::isspace(ch)) {
 				continue;
 			} else if (::isalpha(ch) || ch == '_') {
@@ -67,7 +68,7 @@ Lexer::Token Lexer::Next() {
 					int const ch = m_ris.get();
 					l = l * 10 + (ch - '0');
 					if (l >= (unsigned long long)1 << 63) {
-						throw InvalidCharacterException();
+						throw SyntaxError();
 					}
 				}
 				if (l < (unsigned int)1 << 31) {
@@ -83,9 +84,9 @@ Lexer::Token Lexer::Next() {
 				while (true) {
 					int const ch = m_ris.peek();
 					if (ch < 0) {
-						throw UnexpectedEndOfStream();
+						throw SyntaxError();
 					} else if (ch > 127) {
-						throw InvalidCharacterException();
+						throw SyntaxError();
 					} else {
 						m_ris.get();
 						if (ch == '\'') {
@@ -93,9 +94,9 @@ Lexer::Token Lexer::Next() {
 						} else if (ch == '\\') {
 							int const ch2 = m_ris.get();
 							if (ch2 < 0) {
-								throw UnexpectedEndOfStream();
+								throw SyntaxError();
 							} else if (ch2 > 127) {
-								throw InvalidCharacterException();
+								throw SyntaxError();
 							} else if (ch2 == '\'') {
 								str += '\'';
 							} else if (ch2 == '\\') {
@@ -127,7 +128,7 @@ Lexer::Token Lexer::Next() {
 				case '.':
 					return m_Token = TOKEN_POINT;
 				default:
-					throw InvalidCharacterException();
+					throw SyntaxError();
 				}
 			}
 		}

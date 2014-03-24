@@ -9,18 +9,18 @@ int main() {
 		cout << "lambda> " << flush;
 		::getline(cin, strLine);
 		istringstream iss(strLine);
-		Lexer Lexer(iss);
-		Scanner Scanner(Lexer);
 		try {
 			cout << "      = " << flush;
+			Lexer Lexer(iss);
+			Scanner Scanner(Lexer);
 			Ptr<AbstractValue const> pResult = &(Scanner.Scan()->Evaluate());
 			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "syntax error" << endl;
 		} catch (InternalError const &re) {
 			cerr << "internal error" << endl;
-		} catch (Environment::NotFoundException const &re) {
-			cerr << "variable not found: " << re.m_strName << endl;
+		} catch (RuntimeError const &re) {
+			cerr << "runtime error" << endl;
 		}
 	}
 }

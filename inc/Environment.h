@@ -4,11 +4,6 @@
 struct AbstractValue;
 
 struct AbstractEnvironment {
-	struct NotFoundException {
-		string const m_strName;
-		explicit NotFoundException(string const &a_rstrName);
-	};
-
 	virtual AbstractValue &operator [] (string const &rstrName) const = 0;
 	virtual bool Has(string const &rstrName) const = 0;
 };

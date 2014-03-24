@@ -34,9 +34,6 @@ private:
 public:
 	explicit Lexer(istream &a_ris);
 
-	struct InvalidCharacterException {};
-	struct UnexpectedEndOfStream {};
-
 	Token Current() const;
 	bool End() const;
 
