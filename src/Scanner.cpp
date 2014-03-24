@@ -18,7 +18,7 @@ Ptr<AbstractNode const> Scanner::ScanApplication(Lexer::Token const Terminator) 
 
 
 Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
-	assert(m_rLexer.Current() == Lexer::TOKEN_LAMBDA);
+	assert(m_rLexer.Current() == Lexer::TOKEN_KEYWORD_LAMBDA);
 	if (m_rLexer.Next() != Lexer::TOKEN_IDENTIFIER) {
 		throw SyntaxError();
 	} else {
@@ -63,7 +63,7 @@ Ptr<AbstractNode const> Scanner::ScanVariable() {
 
 Ptr<AbstractNode const> Scanner::ScanSubTerm(Lexer::Token const Terminator) {
 	switch (m_rLexer.Current()) {
-	case Lexer::TOKEN_LAMBDA:
+	case Lexer::TOKEN_KEYWORD_LAMBDA:
 		return ScanFunction(Terminator);
 	case Lexer::TOKEN_LEFT_PARENS:
 		return ScanParens();

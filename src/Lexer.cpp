@@ -52,11 +52,11 @@ Lexer::Token Lexer::Next() {
 					}
 				}
 				if (str == "lambda") {
-					m_Token = TOKEN_LAMBDA;
+					m_Token = TOKEN_KEYWORD_LAMBDA;
 				} else if (str == "true") {
-					m_Token = TOKEN_TRUE;
+					m_Token = TOKEN_KEYWORD_TRUE;
 				} else if (str == "false") {
-					m_Token = TOKEN_FALSE;
+					m_Token = TOKEN_KEYWORD_FALSE;
 				} else {
 					m_Token = TOKEN_IDENTIFIER;
 					m_str = str;
@@ -72,10 +72,10 @@ Lexer::Token Lexer::Next() {
 					}
 				}
 				if (l < (unsigned int)1 << 31) {
-					m_Token = TOKEN_INTEGER;
+					m_Token = TOKEN_LITERAL_INTEGER;
 					m_n = (signed int)l;
 				} else {
-					m_Token = TOKEN_LONG;
+					m_Token = TOKEN_LITERAL_LONG;
 					m_l = (signed long long)l;
 				}
 				return m_Token;
@@ -116,7 +116,7 @@ Lexer::Token Lexer::Next() {
 					}
 				}
 				m_str = str;
-				return m_Token = TOKEN_STRING;
+				return m_Token = TOKEN_LITERAL_STRING;
 			} else {
 				switch (ch) {
 				case '(':
