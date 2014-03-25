@@ -82,11 +82,11 @@ struct AbstractNode;
 struct Closure :
 	public AbstractValue
 {
-	string const m_strArgument;
+	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
 	Environment m_Environment;
 
-	Closure(string const &a_rstrArgument, Ptr<AbstractNode const> &&a_rrpBody, map<string, AbstractValue*> &&a_rrCapture);
+	Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, map<string, AbstractValue*> &&a_rrCapture);
 	virtual ~Closure();
 
 	virtual operator string const () const;

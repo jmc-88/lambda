@@ -12,6 +12,29 @@ AbstractValue &AbstractNode::Evaluate() const {
 }
 
 
+LiteralNode::LiteralNode(AbstractValue &a_rValue)
+	:
+m_rValue(a_rValue) {}
+
+
+LiteralNode::~LiteralNode() {}
+
+
+LiteralNode *LiteralNode::Clone() const {
+	return new LiteralNode(m_rValue);
+}
+
+
+AbstractValue &LiteralNode::Evaluate(Environment &rEnvironment) const {
+	return m_rValue;
+}
+
+
+string const LiteralNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	return (string const)m_rValue;
+}
+
+
 VariableNode::VariableNode(string const &a_rstrName)
 	:
 m_strName(a_rstrName) {}
@@ -62,9 +85,9 @@ AbstractValue &FunctionNode::Evaluate(Environment &rEnvironment) const {
 		for (auto it = ++(m_Arguments.begin()); it != m_Arguments.end(); ++it) {
 			SubArguments.push_back(*it);
 		}
-		return *new Closure(*(m_Arguments.begin()), new FunctionNode(move(SubArguments), m_pBody->Clone()), rEnvironment.Capture());
+		return *new Closure(vector<string>(m_Arguments), new FunctionNode(move(SubArguments), m_pBody->Clone()), rEnvironment.Capture());
 	} else {
-		return *new Closure(*(m_Arguments.begin()), m_pBody->Clone(), rEnvironment.Capture());
+		return *new Closure(vector<string>(m_Arguments), m_pBody->Clone(), rEnvironment.Capture());
 	}
 }
 

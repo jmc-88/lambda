@@ -98,10 +98,10 @@ StringValue::operator string const () const {
 }
 
 
-Closure::Closure(string const &a_rstrArgument, Ptr<AbstractNode const> &&a_rrpBody, map<string, AbstractValue*> &&a_rrCapture)
+Closure::Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, map<string, AbstractValue*> &&a_rrCapture)
 	:
 AbstractValue(TYPE_CLOSURE),
-	m_strArgument(a_rstrArgument),
+	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody)),
 	m_Environment(move(a_rrCapture)) {}
 
@@ -110,7 +110,17 @@ Closure::~Closure() {}
 
 
 Closure::operator string const () const {
-	return "lambda " + m_strArgument + " . " + m_pBody->ToString(m_Environment);
+	assert(m_Arguments.size() > 0);
+	auto it = m_Arguments.begin();
+	string str = "lambda " + *it;
+	for (++it; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	set<string> Names;
+	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
+		Names.insert(*it);
+	}
+	return str += " . " + m_pBody->ToString(OverrideEnvironment(m_Environment, move(Names)));
 }
 
 

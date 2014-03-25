@@ -16,6 +16,20 @@ struct AbstractNode :
 };
 
 
+struct LiteralNode :
+	public AbstractNode
+{
+	AbstractValue &m_rValue;
+
+	explicit LiteralNode(AbstractValue &a_rValue);
+	virtual ~LiteralNode();
+
+	virtual LiteralNode *Clone() const;
+	virtual AbstractValue &Evaluate(Environment &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+};
+
+
 struct VariableNode :
 	public AbstractNode
 {
