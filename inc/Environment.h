@@ -43,8 +43,8 @@ struct OverrideEnvironment :
 
 struct AugmentEnvironment {
 	Environment &m_rEnvironment;
-	string const m_strName;
+	vector<string> const m_Names;
 
-	AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, AbstractValue &a_rValue);
+	AugmentEnvironment(Environment &a_rEnvironment, map<string const, AbstractValue*> const &a_rValues);
 	virtual ~AugmentEnvironment();
 };

@@ -107,33 +107,60 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 }
 
 
-ApplicationNode::ApplicationNode(Ptr<AbstractNode const> &&a_rrpLeft, Ptr<AbstractNode const> &&a_rrpRight)
+ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
-m_pLeft(move(a_rrpLeft)),
-	m_pRight(move(a_rrpRight)) {}
+m_Terms(move(a_rrTerms)) {
+	assert(m_Terms.size() > 1);
+}
 
 
 ApplicationNode::~ApplicationNode() {}
 
 
 ApplicationNode *ApplicationNode::Clone() const {
-	return new ApplicationNode(m_pLeft->Clone(), m_pRight->Clone());
+	vector<Ptr<AbstractNode const>> Terms;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		Terms.push_back((*it)->Clone());
+	}
+	return new ApplicationNode(move(Terms));
 }
 
 
 AbstractValue &ApplicationNode::Evaluate(Environment &rEnvironment) const {
-	AbstractValue &rLeftResult = m_pLeft->Evaluate(rEnvironment);
-	if (rLeftResult.m_Type != AbstractValue::TYPE_CLOSURE) {
-		throw RuntimeError();
-	} else {
-		Closure &rClosure = (Closure&)rLeftResult;
-		AbstractValue &rRightResult = m_pRight->Evaluate(rEnvironment);
-		AugmentEnvironment AugmentEnvironment(rClosure.m_Environment, rClosure.m_strArgument, rRightResult);
-		return rClosure.m_pBody->Evaluate(rClosure.m_Environment);
+	auto i = m_Terms.begin();
+	assert(i != m_Terms.end());
+	AbstractValue *pLeft = &((*i)->Evaluate(rEnvironment));
+	unsigned int cTerms = m_Terms.size() - 1;
+	while (true) {
+		if (pLeft->m_Type != AbstractValue::TYPE_CLOSURE) {
+			throw RuntimeError();
+		} else {
+			Closure &rClosure = *(Closure*)pLeft;
+			map<string const, AbstractValue*> Arguments;
+			for (auto j = rClosure.m_Arguments.begin(); j != rClosure.m_Arguments.end(); ++j, ++i) {
+				Arguments[*j] = &((*i)->Evaluate(rEnvironment));
+			}
+			if (cTerms < rClosure.m_Arguments.size()) {
+				vector<string> Names;
+				for (auto it = Arguments.begin(); it != Arguments.end(); ++it) {
+					Names.push_back(it->first);
+				}
+				AugmentEnvironment AugmentEnvironment(rClosure.m_Environment, Arguments);
+				return *new Closure(move(Names), rClosure.m_pBody->Clone(), rClosure.m_Environment.Capture());
+			} else {
+				AugmentEnvironment AugmentEnvironment(rClosure.m_Environment, Arguments);
+				pLeft = &(rClosure.m_pBody->Evaluate(rClosure.m_Environment));
+				cTerms -= rClosure.m_Arguments.size();
+			}
+		}
 	}
 }
 
 
 string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) const {
-	return "(" + m_pLeft->ToString(rEnvironment) + ")(" + m_pRight->ToString(rEnvironment) + ")";
+	string str;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		str += "(" + (*it)->ToString(rEnvironment) + ")";
+	}
+	return str;
 }

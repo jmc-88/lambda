@@ -77,15 +77,18 @@ bool OverrideEnvironment::Has(string const &rstrName) const {
 }
 
 
-AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, string const &a_rstrName, AbstractValue &a_rValue)
+AugmentEnvironment::AugmentEnvironment(Environment &a_rEnvironment, map<string const, AbstractValue*> const &a_rValues)
 	:
-m_rEnvironment(a_rEnvironment),
-	m_strName(a_rstrName)
-{
-	m_rEnvironment.Push(m_strName, a_rValue);
+m_rEnvironment(a_rEnvironment) {
+	for (auto it = a_rValues.begin(); it != a_rValues.end(); ++it) {
+		m_Names.push_back(it->first);
+		m_rEnvironment.Push(it->first, *(it->second));
+	}
 }
 
 
 AugmentEnvironment::~AugmentEnvironment() {
-	m_rEnvironment.Pop(m_strName);
+	for (auto it = m_Names; it != m_Names.end(); ++it) {
+		m_rEnvironment.Pop(*it);
+	}
 }

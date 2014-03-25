@@ -62,10 +62,9 @@ struct FunctionNode :
 struct ApplicationNode :
 	public AbstractNode
 {
-	Ptr<AbstractNode const> m_pLeft;
-	Ptr<AbstractNode const> m_pRight;
+	vector<Ptr<AbstractNode const>> m_Terms;
 
-	ApplicationNode(Ptr<AbstractNode const> &&a_rrpLeft, Ptr<AbstractNode const> &&a_rrpRight);
+	ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
