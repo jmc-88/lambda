@@ -7,6 +7,7 @@ struct AbstractValue {
 		TYPE_INTEGER,
 		TYPE_LONG,
 		TYPE_FLOAT,
+		TYPE_COMPLEX,
 		TYPE_STRING,
 		TYPE_CLOSURE
 	};
@@ -63,6 +64,19 @@ struct FloatValue :
 
 	FloatValue(double a_f);
 	virtual ~FloatValue();
+
+	virtual operator string const () const;
+};
+
+
+struct ComplexValue :
+	public AbstractValue
+{
+	double m_fReal;
+	double m_fImaginary;
+
+	ComplexValue(double a_fReal, double a_fImaginary);
+	virtual ~ComplexValue();
 
 	virtual operator string const () const;
 };

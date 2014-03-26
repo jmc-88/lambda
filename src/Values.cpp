@@ -76,6 +76,23 @@ FloatValue::operator string const () const {
 }
 
 
+ComplexValue::ComplexValue(double a_fReal, double a_fImaginary)
+	:
+AbstractValue(TYPE_COMPLEX),
+	m_fReal(a_fReal),
+	m_fImaginary(a_fImaginary) {}
+
+
+ComplexValue::~ComplexValue() {}
+
+
+ComplexValue::operator string const () const {
+	ostringstream oss;
+	oss << fixed << m_fReal << "+" << m_fImaginary << "i" << flush;
+	return oss.str();
+}
+
+
 StringValue::StringValue(string const &a_rstr)
 	:
 AbstractValue(TYPE_STRING),
