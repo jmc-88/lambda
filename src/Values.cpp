@@ -11,24 +11,6 @@ m_Type(a_Type) {}
 AbstractValue::~AbstractValue() {}
 
 
-BooleanValue::BooleanValue(bool a_f)
-	:
-AbstractValue(TYPE_BOOLEAN),
-	m_f(a_f) {}
-
-
-BooleanValue::~BooleanValue() {}
-
-
-BooleanValue::operator string const () const {
-	if (m_f) {
-		return "true";
-	} else {
-		return "false";
-	}
-}
-
-
 IntegerValue::IntegerValue(signed int a_n)
 	:
 AbstractValue(TYPE_INTEGER),

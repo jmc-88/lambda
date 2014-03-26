@@ -51,15 +51,11 @@ Lexer::Token Lexer::Next() {
 						break;
 					}
 				}
-				if (str == "lambda") {
-					m_Token = TOKEN_KEYWORD_LAMBDA;
-				} else if (str == "true") {
-					m_Token = TOKEN_KEYWORD_TRUE;
-				} else if (str == "false") {
-					m_Token = TOKEN_KEYWORD_FALSE;
-				} else {
+				if (str != "lambda") {
 					m_Token = TOKEN_IDENTIFIER;
 					m_str = str;
+				} else {
+					m_Token = TOKEN_KEYWORD_LAMBDA;
 				}
 				return m_Token;
 			} else if (::isdigit(ch)) {

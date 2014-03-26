@@ -6,7 +6,6 @@
 
 struct AbstractValue {
 	enum Type {
-		TYPE_BOOLEAN,
 		TYPE_INTEGER,
 		TYPE_LONG,
 		TYPE_FLOAT,
@@ -21,18 +20,6 @@ struct AbstractValue {
 	virtual ~AbstractValue();
 
 	virtual operator string const () const = 0;
-};
-
-
-struct BooleanValue :
-	public AbstractValue
-{
-	bool m_f;
-
-	BooleanValue(bool a_f);
-	virtual ~BooleanValue();
-
-	virtual operator string const () const;
 };
 
 
