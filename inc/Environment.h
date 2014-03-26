@@ -2,31 +2,48 @@
 
 
 struct AbstractValue;
+struct BaseEnvironment;
 
-struct Environment {
+struct AbstractEnvironment {
 private:
-	map<string const, stack<AbstractValue const*>> m_Map;
 	map<string const, stack<AbstractValue const*>> *const m_pMap;
+	friend struct AugmentedEnvironment;
+
+protected:
+	explicit AbstractEnvironment(map<string const, stack<AbstractValue const*>> *const a_pMap);
 
 public:
-	explicit Environment(map<string const, AbstractValue const*> const &a_rMap = map<string const, AbstractValue const*>());
-	virtual ~Environment();
+	virtual ~AbstractEnvironment();
 
 	bool Has(string const &rstrName) const;
-	AbstractValue *operator [] (string const &rstrName) const;
-	void Push(string const &rstrName, AbstractValue const *const) const;
-	AbstractValue *Pop(string const &rstrName) const;
+	AbstractValue const *operator [] (string const &rstrName) const;
+	BaseEnvironment Capture(set<string> const &rVariables) const;
 
-	Environment Capture() const;
+};
+
+
+struct BaseEnvironment :
+	public AbstractEnvironment
+{
+private:
+	map<string const, stack<AbstractValue const*>> m_Map;
+
+public:
+	explicit BaseEnvironment(map<string const, AbstractValue const*> const &a_rMap = map<string const, AbstractValue const*>());
+	virtual ~BaseEnvironment();
+
 };
 
 
 struct AugmentedEnvironment :
-	public Environment
+	public AbstractEnvironment
 {
-	string const m_strName;
+private:
+	AbstractEnvironment const &m_rEnvironment;
+	set<string> m_Names;
 
-	AugmentedEnvironment(string const &a_rstrName, AbstractValue const *const a_pValue);
+public:
+	AugmentedEnvironment(AbstractEnvironment const &a_rEnvironment, map<string const, AbstractValue const*> const &a_rValues);
 	virtual ~AugmentedEnvironment();
 
 };

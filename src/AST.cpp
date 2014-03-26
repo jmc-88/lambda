@@ -18,6 +18,6 @@ LiteralNode *LiteralNode::Clone() const {
 }
 
 
-AbstractValue const *LiteralNode::Evaluate(Environment const &rEnvironment) const {
+AbstractValue const *LiteralNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
 	return m_pValue;
 }

@@ -9,7 +9,7 @@ struct AbstractNode :
 {
 	virtual ~AbstractNode();
 	virtual AbstractNode *Clone() const = 0;
-	virtual AbstractValue const *Evaluate(Environment const &rEnvironment) const = 0;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const = 0;
 };
 
 
@@ -22,7 +22,7 @@ struct LiteralNode :
 	virtual ~LiteralNode();
 
 	virtual LiteralNode *Clone() const;
-	virtual AbstractValue const *Evaluate(Environment const &rEnvironment) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
 
@@ -35,7 +35,7 @@ struct VariableNode :
 	virtual ~VariableNode();
 
 	virtual VariableNode *Clone() const;
-	virtual AbstractValue const *Evaluate(Environment const &rEnvironment) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
 
@@ -49,7 +49,7 @@ struct FunctionNode :
 	virtual ~FunctionNode();
 
 	virtual FunctionNode *Clone() const;
-	virtual AbstractValue const *Evaluate(Environment const &rEnvironment) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
 
@@ -62,5 +62,5 @@ struct ApplicationNode :
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
-	virtual AbstractValue const *Evaluate(Environment const &rEnvironment) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };

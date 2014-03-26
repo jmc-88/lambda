@@ -91,9 +91,9 @@ struct Closure :
 {
 	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
-	Environment m_Environment;
+	BaseEnvironment m_Environment;
 
-	Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, Environment &&a_rrEnvironment);
+	Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, BaseEnvironment &&a_rrEnvironment);
 	virtual ~Closure();
 
 	virtual operator string const () const;
