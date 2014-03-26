@@ -10,8 +10,8 @@ clean :
 bin :
 	mkdir -p bin
 
-bin/lambda : bin/Lexer.o bin/Error.o bin/Main.o
-	$(CXX) $(CXXFLAGS) -o bin/lambda bin/Lexer.o bin/Error.o bin/Main.o
+bin/lambda : bin/Lexer.o bin/Error.o bin/Values.o bin/Main.o
+	$(CXX) $(CXXFLAGS) -o bin/lambda bin/Lexer.o bin/Error.o bin/Values.o bin/Main.o
 
 inc/PCH.h.gch : inc/PCH.h
 	$(CXX) $(CXXFLAGS) -o inc/PCH.h.gch inc/PCH.h
@@ -21,6 +21,9 @@ bin/Lexer.o : bin inc/PCH.h.gch inc/Lexer.h src/Lexer.cpp
 
 bin/Error.o : bin inc/PCH.h.gch inc/Error.h src/Error.cpp
 	$(CXX) $(CXXFLAGS) -c -o bin/Error.o src/Error.cpp
+
+bin/Values.o : bin inc/PCH.h.gch inc/Values.h src/Values.cpp
+	$(CXX) $(CXXFLAGS) -c -o bin/Values.o src/Values.cpp
 
 bin/Main.o : bin inc/PCH.h.gch src/Main.cpp
 	$(CXX) $(CXXFLAGS) -c -o bin/Main.o src/Main.cpp
