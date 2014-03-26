@@ -73,10 +73,21 @@ Z  = lambda f . (lambda x . f (lambda v . x x v)) (lambda x . f (lambda v . x x 
 &   = <bitwise AND>
 |   = <bitwise OR>
 ^   = <bitwise XOR>
+
+pair    = lambda x, y, z . z x y
+first   = lambda pair . pair lambda x, y . x
+second  = lambda pair . pair lambda x, y . y
+
+list  = pair
+head  = first
+tail  = second
+
+print  = <prints the string argument to standard output>
+input  = <reads a line from standard input and returns it as a string, excluding the line terminator>
 ```
 
 ## Known Issues
 
 The `=` comparison operator doesn't work on booleans because they are Church-encoded.
 
-No garbage collection yet, the interpreter will leak the world until you close it (to be fixed in a future release).
+No garbage collection yet, the interpreter will leak the world until you terminate it (this is going to be fixed in a future release).
