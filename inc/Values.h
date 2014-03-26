@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Environment.h>
+#include <Values.h>
+
 
 struct AbstractValue {
 	enum Type {
@@ -89,6 +92,22 @@ struct StringValue :
 
 	StringValue(string const &a_rstr);
 	virtual ~StringValue();
+
+	virtual operator string const () const;
+};
+
+
+struct AbstractNode;
+
+struct Closure :
+	public AbstractValue
+{
+	vector<string> m_Arguments;
+	Ptr<AbstractNode const> m_pBody;
+	Environment m_Environment;
+
+	Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, Environment &&a_rrEnvironment);
+	virtual ~Closure();
 
 	virtual operator string const () const;
 };

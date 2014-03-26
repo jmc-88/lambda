@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include <Values.h>
+#include <AST.h>
 
 
 AbstractValue::AbstractValue(Type const a_Type)
