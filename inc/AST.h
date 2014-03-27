@@ -10,7 +10,7 @@ struct AbstractNode :
 	virtual ~AbstractNode();
 	virtual AbstractNode *Clone() const = 0;
 	virtual set<string> GetFreeVariables() const = 0;
-	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const = 0;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment = BaseEnvironment()) const = 0;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const = 0;
 };
 

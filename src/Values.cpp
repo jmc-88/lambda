@@ -124,3 +124,8 @@ Closure::operator string const () const {
 	}
 	return str += " . " + m_pBody->ToString(m_Environment);
 }
+
+
+ostream &operator << (ostream &ros, AbstractValue const &rValue) {
+	return ros << (string const)rValue;
+}

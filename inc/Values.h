@@ -98,3 +98,6 @@ struct Closure :
 
 	virtual operator string const () const;
 };
+
+
+ostream &operator << (ostream &ros, AbstractValue const &rValue);

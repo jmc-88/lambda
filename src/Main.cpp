@@ -1,6 +1,8 @@
 #include <PCH.h>
 #include <Error.h>
 #include <Lexer.h>
+#include <Scanner.h>
+#include <Values.h>
 
 int main() {
 	string strLine;
@@ -11,7 +13,9 @@ int main() {
 		try {
 			cout << "      = " << flush;
 			Lexer Lexer(iss);
-			// TODO
+			Scanner Scanner(Lexer);
+			Ptr<AbstractValue const> pResult = Scanner.Scan()->Evaluate();
+			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "syntax error" << endl;
 		} catch (InternalError const &re) {
