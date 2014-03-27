@@ -9,6 +9,7 @@ Features:
 	* i.e. `a b c` is equivalent to `(a b) c`
 * native support for N-ary functions,
 * tail call optimization,
+* single-line comments (with the `#` character),
 * language utilities (see below),
 * extra types:
 	* 32 bit signed integers
@@ -17,9 +18,7 @@ Features:
 	* complex numbers (pairs of double-precision floating point numbers)
 	* strings
 
-Booleans are Church-encoded. All the data is immutable.
-
-Single-line comments support through the `#` character.
+Booleans are Church-encoded.
 
 Some examples:
 
@@ -38,6 +37,12 @@ Z lambda factorial, n . (< n 1) 1 (* n (factorial (- n 1)))
 
 # fibonacci
 Z lambda fibonacci, i . (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
+
+# a list of 4 integers: 3, 6, 2, 5
+list 3 (list 6 (list 2 (list 5)))
+
+# printing a list to standard output
+Z lambda print_list, list . and (print (head list)) (and (print ', ') (print_list (tail list)))
 ```
 
 ## Language Utilities
@@ -82,8 +87,9 @@ list  = pair
 head  = first
 tail  = second
 
-print  = <prints the string argument to standard output>
-input  = <reads a line from standard input and returns it as a string, excluding the line terminator>
+print    = <prints the string argument to standard output, returns true>
+println  = <prints the string argument followed by a line terminator to standard output, returns true>
+input    = <reads a line from standard input and returns it as a string, excluding the line terminator>
 ```
 
 ## Known Issues
