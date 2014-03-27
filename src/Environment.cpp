@@ -63,4 +63,12 @@ AbstractEnvironment(a_rEnvironment.m_pMap),
 }
 
 
-AugmentedEnvironment::~AugmentedEnvironment() {}
+AugmentedEnvironment::~AugmentedEnvironment() {
+	for (auto it = m_Names.begin(); it != m_Names.end(); ++it) {
+		stack<AbstractValue const*> &rStack = (*m_pMap)[*it];
+		rStack.pop();
+		if (rStack.empty()) {
+			m_pMap->erase(*it);
+		}
+	}
+}
