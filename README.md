@@ -43,6 +43,9 @@ list 3 (list 6 (list 2 (list 5)))
 
 # printing a list to standard output
 Z lambda print_list, list . and (print (head list)) (and (print ', ') (print_list (tail list)))
+
+# scanning a list looking for a value
+Z lambda scan, list, value . (= value (head list)) value (scan (tail list))
 ```
 
 ## Language Utilities
