@@ -89,8 +89,8 @@ second  = lambda pair . pair lambda x, y . y
 
 list  = lambda element, next . pair element lambda f, g . f next
 lend  = lambda element . pair element lambda f, g . g nil
-head  = lambda list . list lambda element, next . element
-tail  = lambda list, f, g . list lambda element, next . next f g
+head  = first
+tail  = lambda list, f, g . second list f g
 
 print    = <prints the string argument to standard output, returns true>
 println  = <prints the string argument followed by a line terminator to standard output, returns true>
