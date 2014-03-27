@@ -140,3 +140,18 @@ void Lexer::PushBack(Lexer::Token const Token) {
 string const Lexer::GetString() const {
 	return m_str;
 }
+
+
+signed int Lexer::GetInteger() const {
+	return m_n;
+}
+
+
+signed long long Lexer::GetLong() const {
+	return m_l;
+}
+
+
+double Lexer::GetFloat() const {
+	return m_f;
+}
