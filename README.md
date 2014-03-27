@@ -33,19 +33,19 @@ lambda x . x
 (lambda x . x x)(lambda x . x x)
 
 # factorial
-Z lambda factorial, n . (< n 1) 1 (* n (factorial (- n 1)))
+Z lambda factorial, n . if (< n 1) (lambda x . 1) (lambda x . * n (factorial (- n 1)))
 
 # fibonacci
-Z lambda fibonacci, i . (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
+Z lambda fibonacci, i . if (< i 2) (lambda x . 1) (lambda x . + (fibonacci (- i 1)) (fibonacci (- i 2)))
 
 # a list of 4 integers: 3, 6, 2, 5
-list 3 (list 6 (list 2 (list 5)))
+list 3 (list 6 (list 2 (lend 5)))
 
 # printing a list to standard output
-Z lambda print_list, list . and (print (head list)) (and (print ', ') (print_list (tail list)))
+Z lambda print_list, list . tail list (lambda tail . and (print (+ (head list) ', ')) (print_list tail)) (lambda x . print (head list))
 
 # scanning a list looking for a value
-Z lambda scan, list, value . (= value (head list)) value (scan (tail list))
+Z lambda scan, list, value . if (= value (head list)) (lambda x . value) (lambda x . scan (tail list))
 ```
 
 ## Language Utilities
@@ -55,13 +55,14 @@ The following predefined terms are readily available and you can use them withou
 ```
 true   = lambda x, y . x
 false  = lambda x, y . y
+nil    = false
 
 not  = lambda a . a false true
 and  = lambda a, b . a b false
 or   = lambda a, b . a true b
 xor  = lambda a, b . a (not b) b
 
-if  = lambda condition, then, else . condition then else
+if  = lambda condition, then, else . condition then else nil
 
 Z  = lambda f . (lambda x . f (lambda v . x x v)) (lambda x . f (lambda v . x x v))
 
@@ -86,9 +87,10 @@ pair    = lambda x, y, z . z x y
 first   = lambda pair . pair lambda x, y . x
 second  = lambda pair . pair lambda x, y . y
 
-list  = pair
-head  = first
-tail  = second
+list  = lambda element, next . pair element lambda f, g . f next
+lend  = lambda element . pair element lambda f, g . g nil
+head  = lambda list . list lambda element, next . element
+tail  = lambda list, f, g . list lambda element, next . next f g
 
 print    = <prints the string argument to standard output, returns true>
 println  = <prints the string argument followed by a line terminator to standard output, returns true>
@@ -97,6 +99,6 @@ input    = <reads a line from standard input and returns it as a string, excludi
 
 ## Known Issues
 
-The `=` comparison operator doesn't work on booleans because they are Church-encoded.
+The `=` and `!=` comparison operators don't work on booleans because they are Church-encoded.
 
 No garbage collection yet, the interpreter will leak the world until you terminate it (this is going to be fixed in a future release).
