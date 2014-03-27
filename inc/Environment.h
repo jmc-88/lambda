@@ -9,6 +9,12 @@ private:
 	map<string const, stack<AbstractValue const*>> *const m_pMap;
 	friend struct AugmentedEnvironment;
 
+	AbstractEnvironment(AbstractEnvironment const&) = delete;
+	AbstractEnvironment(AbstractEnvironment&&) = delete;
+
+	void operator = (AbstractEnvironment const&) = delete;
+	void operator = (AbstractEnvironment&&) = delete;
+
 protected:
 	explicit AbstractEnvironment(map<string const, stack<AbstractValue const*>> *const a_pMap);
 
@@ -30,7 +36,14 @@ private:
 
 public:
 	explicit BaseEnvironment(map<string const, AbstractValue const*> const &a_rMap = map<string const, AbstractValue const*>());
+
+	BaseEnvironment(BaseEnvironment const &rEnvironment);
+	BaseEnvironment(BaseEnvironment &&rrEnvironment);
+
 	virtual ~BaseEnvironment();
+
+	BaseEnvironment &operator = (BaseEnvironment const &rEnvironment);
+	BaseEnvironment &operator = (BaseEnvironment &&rrEnvironment);
 
 };
 
@@ -44,6 +57,13 @@ private:
 
 public:
 	AugmentedEnvironment(AbstractEnvironment const &a_rEnvironment, map<string const, AbstractValue const*> const &a_rValues);
+
+	AugmentedEnvironment(AugmentedEnvironment const &rEnvironment);
+	AugmentedEnvironment(AugmentedEnvironment &&rrEnvironment);
+
 	virtual ~AugmentedEnvironment();
+
+	AugmentedEnvironment &operator = (AugmentedEnvironment const &rEnvironment);
+	AugmentedEnvironment &operator = (AugmentedEnvironment &&rrEnvironment);
 
 };

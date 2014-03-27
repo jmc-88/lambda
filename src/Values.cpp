@@ -99,3 +99,14 @@ StringValue::operator string const () const {
 	}
 	return str += "\'";
 }
+
+
+Closure::Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, BaseEnvironment &&a_rrEnvironment)
+	:
+AbstractValue(TYPE_CLOSURE),
+	m_Arguments(move(a_rrArguments)),
+	m_pBody(move(a_rrpBody)),
+	m_Environment(move(a_rrEnvironment)) {}
+
+
+Closure::~Closure() {}
