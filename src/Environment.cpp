@@ -48,7 +48,31 @@ AbstractEnvironment(&m_Map) {
 }
 
 
+BaseEnvironment::BaseEnvironment(BaseEnvironment const &rEnvironment)
+	:
+AbstractEnvironment(&m_Map),
+	m_Map(rEnvironment.m_Map) {}
+
+
+BaseEnvironment::BaseEnvironment(BaseEnvironment &&rrEnvironment)
+	:
+AbstractEnvironment(&m_Map),
+	m_Map(move(rrEnvironment.m_Map)) {}
+
+
 BaseEnvironment::~BaseEnvironment() {}
+
+
+BaseEnvironment &BaseEnvironment::operator = (BaseEnvironment const &rEnvironment) {
+	m_Map = rEnvironment.m_Map;
+	return *this;
+}
+
+
+BaseEnvironment &BaseEnvironment::operator = (BaseEnvironment &&rrEnvironment) {
+	m_Map = move(rrEnvironment.m_Map);
+	return *this;
+}
 
 
 AugmentedEnvironment::AugmentedEnvironment(AbstractEnvironment const &a_rEnvironment, map<string const, AbstractValue const*> const &a_rValues)

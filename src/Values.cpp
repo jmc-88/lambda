@@ -106,7 +106,21 @@ Closure::Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrp
 AbstractValue(TYPE_CLOSURE),
 	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody)),
-	m_Environment(move(a_rrEnvironment)) {}
+	m_Environment(move(a_rrEnvironment))
+{
+	assert(m_Arguments.size() > 0);
+}
 
 
 Closure::~Closure() {}
+
+
+Closure::operator string const () const {
+	string str = "lambda ";
+	auto it = m_Arguments.begin();
+	str += *it;
+	for (; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	return str += " . " + (string const)*m_pBody;
+}
