@@ -73,6 +73,11 @@ m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
 	assert(m_Arguments.size() > 0);
+
+	m_FreeVariables = m_pBody->GetFreeVariables();
+	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
+		m_FreeVariables.erase(*it);
+	}
 }
 
 
@@ -85,17 +90,12 @@ FunctionNode *FunctionNode::Clone() const {
 
 
 set<string> FunctionNode::GetFreeVariables() const {
-	set<string> FreeVariables = m_pBody->GetFreeVariables();
-	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
-		FreeVariables.erase(*it);
-	}
-	return FreeVariables;
+	return m_FreeVariables;
 }
 
 
 AbstractValue const *FunctionNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	// FIXME free variable set must be cached
-	return new Closure(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone(), rEnvironment.Capture(GetFreeVariables()));
+	return new Closure(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone(), rEnvironment.Capture(set<string>(m_FreeVariables.begin(), m_FreeVariables.end())));
 }
 
 

@@ -48,6 +48,10 @@ struct VariableNode :
 struct FunctionNode :
 	public AbstractNode
 {
+private:
+	set<string> m_FreeVariables;
+
+public:
 	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
 
