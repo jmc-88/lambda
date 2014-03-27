@@ -42,9 +42,6 @@ public:
 
 	virtual ~BaseEnvironment();
 
-	BaseEnvironment &operator = (BaseEnvironment const &rEnvironment);
-	BaseEnvironment &operator = (BaseEnvironment &&rrEnvironment);
-
 };
 
 
@@ -62,9 +59,6 @@ public:
 	AugmentedEnvironment(AugmentedEnvironment &&rrEnvironment);
 
 	virtual ~AugmentedEnvironment();
-
-	AugmentedEnvironment &operator = (AugmentedEnvironment const &rEnvironment);
-	AugmentedEnvironment &operator = (AugmentedEnvironment &&rrEnvironment);
 
 };
 
