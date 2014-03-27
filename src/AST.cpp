@@ -28,6 +28,11 @@ AbstractValue const *LiteralNode::Evaluate(AbstractEnvironment const &rEnvironme
 }
 
 
+string const LiteralNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	return (string const)*m_pValue;
+}
+
+
 VariableNode::VariableNode(string const &a_rstrName)
 	:
 m_strName(a_rstrName) {}
@@ -53,10 +58,22 @@ AbstractValue const *VariableNode::Evaluate(AbstractEnvironment const &rEnvironm
 }
 
 
+string const VariableNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	if (rEnvironment.Has(m_strName)) {
+		return (string const)*(rEnvironment[m_strName]);
+	} else {
+		return m_strName;
+	}
+}
+
+
 FunctionNode::FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
 m_Arguments(move(a_rrArguments)),
-	m_pBody(move(a_rrpBody)) {}
+	m_pBody(move(a_rrpBody))
+{
+	assert(m_Arguments.size() > 0);
+}
 
 
 FunctionNode::~FunctionNode() {}
@@ -77,5 +94,17 @@ set<string> FunctionNode::GetFreeVariables() const {
 
 
 AbstractValue const *FunctionNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
+	// FIXME free variable set must be cached
 	return new Closure(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone(), rEnvironment.Capture(GetFreeVariables()));
+}
+
+
+string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	string str = "lambda ";
+	auto it = m_Arguments.begin();
+	str += *it;
+	for (; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	return str += " . " + m_pBody->ToString(OverrideEnvironment(rEnvironment, set<string>(m_Arguments.begin(), m_Arguments.end())));
 }

@@ -96,3 +96,33 @@ AugmentedEnvironment::~AugmentedEnvironment() {
 		}
 	}
 }
+
+
+OverrideEnvironment::OverrideEnvironment(AbstractEnvironment const &a_rEnvironment, set<string> &&a_rrNames)
+	:
+AbstractEnvironment(nullptr),
+	m_rEnvironment(a_rEnvironment),
+	m_Names(move(a_rrNames)) {}
+
+
+OverrideEnvironment::~OverrideEnvironment() {}
+
+
+bool OverrideEnvironment::Has(string const &rstrName) const {
+	return !m_Names.count(rstrName) && m_rEnvironment.Has(rstrName);
+}
+
+
+AbstractValue const *OverrideEnvironment::operator [] (string const &rstrName) const {
+	if (m_Names.count(rstrName)) {
+		throw RuntimeError();
+	} else {
+		return m_rEnvironment[rstrName];
+	}
+}
+
+
+BaseEnvironment OverrideEnvironment::Capture(set<string> const &rVariables) const {
+	assert(false);
+	throw InternalError();
+}

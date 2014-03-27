@@ -122,5 +122,5 @@ Closure::operator string const () const {
 	for (; it != m_Arguments.end(); ++it) {
 		str += ", " + *it;
 	}
-	return str += " . " + (string const)*m_pBody;
+	return str += " . " + m_pBody->ToString(m_Environment);
 }

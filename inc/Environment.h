@@ -21,9 +21,9 @@ protected:
 public:
 	virtual ~AbstractEnvironment();
 
-	bool Has(string const &rstrName) const;
-	AbstractValue const *operator [] (string const &rstrName) const;
-	BaseEnvironment Capture(set<string> const &rVariables) const;
+	virtual bool Has(string const &rstrName) const;
+	virtual AbstractValue const *operator [] (string const &rstrName) const;
+	virtual BaseEnvironment Capture(set<string> const &rVariables) const;
 
 };
 
@@ -65,5 +65,23 @@ public:
 
 	AugmentedEnvironment &operator = (AugmentedEnvironment const &rEnvironment);
 	AugmentedEnvironment &operator = (AugmentedEnvironment &&rrEnvironment);
+
+};
+
+
+struct OverrideEnvironment :
+	public AbstractEnvironment
+{
+private:
+	AbstractEnvironment const &m_rEnvironment;
+	set<string> m_Names;
+
+public:
+	OverrideEnvironment(AbstractEnvironment const &a_rEnvironment, set<string> &&a_rrNames);
+	virtual ~OverrideEnvironment();
+
+	virtual bool Has(string const &rstrName) const;
+	virtual AbstractValue const *operator [] (string const &rstrName) const;
+	virtual BaseEnvironment Capture(set<string> const &rVariables) const;
 
 };
