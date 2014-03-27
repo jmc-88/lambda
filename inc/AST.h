@@ -9,6 +9,7 @@ struct AbstractNode :
 {
 	virtual ~AbstractNode();
 	virtual AbstractNode *Clone() const = 0;
+	virtual set<string> GetFreeVariables() const = 0;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const = 0;
 };
 
@@ -22,6 +23,7 @@ struct LiteralNode :
 	virtual ~LiteralNode();
 
 	virtual LiteralNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
@@ -35,6 +37,7 @@ struct VariableNode :
 	virtual ~VariableNode();
 
 	virtual VariableNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
@@ -45,10 +48,11 @@ struct FunctionNode :
 	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
 
-	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &a_rrpBody);
+	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~FunctionNode();
 
 	virtual FunctionNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
 
@@ -62,5 +66,6 @@ struct ApplicationNode :
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 };
