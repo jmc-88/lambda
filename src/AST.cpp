@@ -160,13 +160,15 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 					Arguments[*(j++)] = (*(i++))->Evaluate(rEnvironment);
 				}
 				vector<string> OtherArguments;
+				set<string> FreeVariables = pClosure->m_pBody->GetFreeVariables();
 				for (; j != pClosure->m_Arguments.end(); ++j) {
 					OtherArguments.push_back(*j);
+					FreeVariables.erase(*j);
 				}
 				return new Closure(
 					move(OtherArguments),
 					pClosure->m_pBody->Clone(),
-					AugmentedEnvironment(pClosure->m_Environment, move(Arguments)).Capture(pClosure->m_pBody->GetFreeVariables())
+					AugmentedEnvironment(pClosure->m_Environment, move(Arguments)).Capture(FreeVariables)
 					);
 			} else {
 				for (auto j = pClosure->m_Arguments.begin(); j != pClosure->m_Arguments.end(); ++j, --cTerms) {
