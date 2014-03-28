@@ -4,12 +4,17 @@
 
 
 Ptr<AbstractNode const> Scanner::ScanApplication(Lexer::Token const Terminator) {
-	vector<Ptr<AbstractNode const>> Terms;
-	Terms.push_back(ScanTerm(Terminator));
-	while (m_rLexer.Current() != Terminator) {
-		Terms.push_back(ScanTerm(Terminator));
+	Ptr<AbstractNode const> pFirst = ScanTerm(Terminator);
+	if (m_rLexer.Current() != Terminator) {
+		vector<Ptr<AbstractNode const>> Terms;
+		Terms.push_back(move(pFirst));
+		while (m_rLexer.Current() != Terminator) {
+			Terms.push_back(ScanTerm(Terminator));
+		}
+		return new ApplicationNode(move(Terms));
+	} else {
+		return pFirst;
 	}
-	return new ApplicationNode(move(Terms));
 }
 
 

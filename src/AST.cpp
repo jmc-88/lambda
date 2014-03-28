@@ -118,7 +118,7 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
 m_Terms(move(a_rrTerms)) {
-	assert(m_Terms.size() > 0);
+	assert(m_Terms.size() > 1);
 
 	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
 		set<string> const FreeVariables = (*it)->GetFreeVariables();
