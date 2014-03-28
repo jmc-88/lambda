@@ -62,12 +62,17 @@ public:
 	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+
 };
 
 
 struct ApplicationNode :
 	public AbstractNode
 {
+private:
+	set<string> m_FreeVariables;
+
+public:
 	vector<Ptr<AbstractNode const>> m_Terms;
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
@@ -77,4 +82,5 @@ struct ApplicationNode :
 	virtual set<string> GetFreeVariables() const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+
 };

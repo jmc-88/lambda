@@ -55,7 +55,6 @@ private:
 public:
 	AugmentedEnvironment(AbstractEnvironment const &a_rEnvironment, map<string const, AbstractValue const*> const &a_rValues);
 
-	AugmentedEnvironment(AugmentedEnvironment const &rEnvironment);
 	AugmentedEnvironment(AugmentedEnvironment &&rrEnvironment);
 
 	virtual ~AugmentedEnvironment();

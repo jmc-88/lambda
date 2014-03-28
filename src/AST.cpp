@@ -1,5 +1,6 @@
 #include <PCH.h>
 #include <AST.h>
+#include <Error.h>
 
 
 AbstractNode::~AbstractNode() {}
@@ -95,7 +96,11 @@ set<string> FunctionNode::GetFreeVariables() const {
 
 
 AbstractValue const *FunctionNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	return new Closure(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone(), rEnvironment.Capture(set<string>(m_FreeVariables.begin(), m_FreeVariables.end())));
+	return new Closure(
+		vector<string>(m_Arguments.begin(), m_Arguments.end()),
+		m_pBody->Clone(),
+		rEnvironment.Capture(set<string>(m_FreeVariables.begin(), m_FreeVariables.end()))
+		);
 }
 
 
@@ -107,4 +112,77 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 		str += ", " + *it;
 	}
 	return str += " . " + m_pBody->ToString(OverrideEnvironment(rEnvironment, set<string>(m_Arguments.begin(), m_Arguments.end())));
+}
+
+
+ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
+	:
+m_Terms(move(a_rrTerms)) {
+	assert(m_Terms.size() > 0);
+
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		set<string> const FreeVariables = (*it)->GetFreeVariables();
+		m_FreeVariables.insert(FreeVariables.begin(), FreeVariables.end());
+	}
+}
+
+
+ApplicationNode::~ApplicationNode() {}
+
+
+ApplicationNode *ApplicationNode::Clone() const {
+	vector<Ptr<AbstractNode const>> Terms;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		Terms.push_back((*it)->Clone());
+	}
+	return new ApplicationNode(move(Terms));
+}
+
+
+set<string> ApplicationNode::GetFreeVariables() const {
+	return m_FreeVariables;
+}
+
+
+AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
+	auto i = m_Terms.begin();
+	AbstractValue const *pLeft = (*(i++))->Evaluate(rEnvironment);
+	unsigned int cTerms = m_Terms.size() - 1;
+	while (true) {
+		if (pLeft->m_Type != AbstractValue::TYPE_CLOSURE) {
+			throw RuntimeError();
+		} else {
+			Closure const *const pClosure = (Closure const*)pLeft;
+			map<string const, AbstractValue const*> Arguments;
+			if (cTerms < pClosure->m_Arguments.size()) {
+				auto j = pClosure->m_Arguments.begin();
+				while (cTerms-- > 0) {
+					Arguments[*(j++)] = (*(i++))->Evaluate(rEnvironment);
+				}
+				vector<string> OtherArguments;
+				for (; j != pClosure->m_Arguments.end(); ++j) {
+					OtherArguments.push_back(*j);
+				}
+				return new Closure(
+					move(OtherArguments),
+					pClosure->m_pBody->Clone(),
+					AugmentedEnvironment(pClosure->m_Environment, move(Arguments)).Capture(pClosure->m_pBody->GetFreeVariables())
+					);
+			} else {
+				for (auto j = pClosure->m_Arguments.begin(); j != pClosure->m_Arguments.end(); ++j, --cTerms) {
+					Arguments[*j] = (*(i++))->Evaluate(rEnvironment);
+				}
+				pLeft = pClosure->m_pBody->Evaluate(AugmentedEnvironment(pClosure->m_Environment, move(Arguments)));
+			}
+		}
+	}
+}
+
+
+string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	string str;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		str += "(" + (*it)->ToString(rEnvironment) + ")";
+	}
+	return str;
 }
