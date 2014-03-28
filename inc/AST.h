@@ -52,6 +52,7 @@ private:
 	set<string> m_FreeVariables;
 
 public:
+	 // FIXME either these must be const or free variables must not be cached
 	vector<string> m_Arguments;
 	Ptr<AbstractNode const> m_pBody;
 
@@ -73,7 +74,7 @@ private:
 	set<string> m_FreeVariables;
 
 public:
-	vector<Ptr<AbstractNode const>> m_Terms;
+	vector<Ptr<AbstractNode const>> m_Terms; // FIXME either this must be const or free variables must not be cached
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
 	virtual ~ApplicationNode();
