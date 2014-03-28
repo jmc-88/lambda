@@ -108,7 +108,7 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 	string str = "lambda ";
 	auto it = m_Arguments.begin();
 	str += *it;
-	for (; it != m_Arguments.end(); ++it) {
+	for (++it; it != m_Arguments.end(); ++it) {
 		str += ", " + *it;
 	}
 	return str += " . " + m_pBody->ToString(OverrideEnvironment(rEnvironment, set<string>(m_Arguments.begin(), m_Arguments.end())));
