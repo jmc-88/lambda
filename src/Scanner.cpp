@@ -92,6 +92,7 @@ Ptr<AbstractNode const> Scanner::ScanParens() {
 	if (m_rLexer.Current() != Lexer::TOKEN_RIGHT_PARENS) {
 		throw SyntaxError();
 	} else {
+		m_rLexer.Next();
 		return pTerm;
 	}
 }
@@ -99,10 +100,10 @@ Ptr<AbstractNode const> Scanner::ScanParens() {
 
 Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
 	assert(m_rLexer.Current() == Lexer::TOKEN_KEYWORD_LAMBDA);
-	vector<string> Arguments;
 	if (m_rLexer.Next() != Lexer::TOKEN_IDENTIFIER) {
 		throw SyntaxError();
 	} else {
+		vector<string> Arguments;
 		Arguments.push_back(m_rLexer.GetString());
 		while (m_rLexer.Next() == Lexer::TOKEN_COMMA) {
 			if (m_rLexer.Next() != Lexer::TOKEN_IDENTIFIER) {
@@ -111,7 +112,7 @@ Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
 				Arguments.push_back(m_rLexer.GetString());
 			}
 		}
-		if (m_rLexer.Next() != Lexer::TOKEN_POINT) {
+		if (m_rLexer.Current() != Lexer::TOKEN_POINT) {
 			throw SyntaxError();
 		} else {
 			m_rLexer.Next();
