@@ -148,7 +148,7 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 	auto i = m_Terms.begin();
 	AbstractValue const *pLeft = (*(i++))->Evaluate(rEnvironment);
 	unsigned int cTerms = m_Terms.size() - 1;
-	while (true) {
+	while (cTerms > 0) {
 		if (pLeft->m_Type != AbstractValue::TYPE_CLOSURE) {
 			throw RuntimeError();
 		} else {
@@ -176,6 +176,7 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 			}
 		}
 	}
+	return pLeft;
 }
 
 
