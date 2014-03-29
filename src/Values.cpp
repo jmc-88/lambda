@@ -129,3 +129,27 @@ Closure::operator string const () const {
 ostream &operator << (ostream &ros, AbstractValue const &rValue) {
 	return ros << (string const)rValue;
 }
+
+
+Macro::Macro(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
+	:
+AbstractValue(TYPE_MACRO),
+	m_Arguments(move(a_rrArguments)),
+	m_pBody(move(a_rrpBody))
+{
+	assert(m_Arguments.size() > 0);
+}
+
+
+Macro::~Macro() {}
+
+
+Macro::operator string const () const {
+	string str = "macro ";
+	auto it = m_Arguments.begin();
+	str += *it;
+	for (++it; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	return str += " . " + m_pBody->ToString(BaseEnvironment());
+}

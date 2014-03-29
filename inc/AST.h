@@ -18,7 +18,7 @@ struct AbstractNode :
 struct LiteralNode :
 	public AbstractNode
 {
-	AbstractValue const *m_pValue;
+	AbstractValue const *const m_pValue;
 
 	explicit LiteralNode(AbstractValue const *a_pValue);
 	virtual ~LiteralNode();
@@ -33,7 +33,7 @@ struct LiteralNode :
 struct VariableNode :
 	public AbstractNode
 {
-	string m_strName;
+	string const m_strName;
 
 	explicit VariableNode(string const &a_rstrName);
 	virtual ~VariableNode();
@@ -49,12 +49,13 @@ struct FunctionNode :
 	public AbstractNode
 {
 private:
-	set<string> m_FreeVariables;
+	set<string> const m_FreeVariables;
+
+	static set<string> ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody);
 
 public:
-	 // FIXME either these must be const or free variables must not be cached
-	vector<string> m_Arguments;
-	Ptr<AbstractNode const> m_pBody;
+	vector<string> const m_Arguments;
+	Ptr<AbstractNode const> const m_pBody;
 
 	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~FunctionNode();
@@ -67,14 +68,39 @@ public:
 };
 
 
+struct MacroNode :
+	public AbstractNode
+{
+private:
+	set<string> const m_FreeVariables;
+
+	static set<string> ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody);
+
+public:
+	vector<string> const m_Arguments;
+	Ptr<AbstractNode const> const m_pBody;
+
+	MacroNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
+	virtual ~MacroNode();
+
+	virtual MacroNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+
+};
+
+
 struct ApplicationNode :
 	public AbstractNode
 {
 private:
-	set<string> m_FreeVariables;
+	set<string> const m_FreeVariables;
+
+	static set<string> ExtractFreeVariables(vector<Ptr<AbstractNode const>> const &rTerms);
 
 public:
-	vector<Ptr<AbstractNode const>> m_Terms; // FIXME either this must be const or free variables must not be cached
+	vector<Ptr<AbstractNode const>> const m_Terms;
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
 	virtual ~ApplicationNode();

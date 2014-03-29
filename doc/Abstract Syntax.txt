@@ -1,3 +1,5 @@
-A := M [M [...]]
-M := k | x | F | (A)
+L := A | let x = A in L
+A := T [T [...]]
+T := k | x | F | M | (A)
 F := lambda x[, y[, ...]] . A
+M := macro x[, y[, ...]] . A

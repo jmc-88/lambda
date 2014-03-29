@@ -11,7 +11,8 @@ struct AbstractValue {
 		TYPE_FLOAT,
 		TYPE_COMPLEX,
 		TYPE_STRING,
-		TYPE_CLOSURE
+		TYPE_CLOSURE,
+		TYPE_MACRO
 	};
 
 	Type const m_Type;
@@ -95,6 +96,19 @@ struct Closure :
 
 	Closure(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody, BaseEnvironment &&a_rrEnvironment);
 	virtual ~Closure();
+
+	virtual operator string const () const;
+};
+
+
+struct Macro :
+	public AbstractValue
+{
+	vector<string> m_Arguments;
+	Ptr<AbstractNode const> m_pBody;
+
+	Macro(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
+	virtual ~Macro();
 
 	virtual operator string const () const;
 };

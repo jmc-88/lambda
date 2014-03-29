@@ -68,17 +68,22 @@ string const VariableNode::ToString(AbstractEnvironment const &rEnvironment) con
 }
 
 
+set<string> FunctionNode::ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody) {
+	set<string> FreeVariables = rpBody->GetFreeVariables();
+	for (auto it = rArguments.begin(); it != rArguments.end(); ++it) {
+		FreeVariables.erase(*it);
+	}
+	return FreeVariables;
+}
+
+
 FunctionNode::FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
-m_Arguments(move(a_rrArguments)),
+m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
+	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
 	assert(m_Arguments.size() > 0);
-
-	m_FreeVariables = m_pBody->GetFreeVariables();
-	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
-		m_FreeVariables.erase(*it);
-	}
 }
 
 
@@ -115,15 +120,70 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 }
 
 
+set<string> MacroNode::ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody) {
+	set<string> FreeVariables = rpBody->GetFreeVariables();
+	for (auto it = rArguments.begin(); it != rArguments.end(); ++it) {
+		FreeVariables.erase(*it);
+	}
+	return FreeVariables;
+}
+
+
+MacroNode::MacroNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
+	:
+m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
+	m_Arguments(move(a_rrArguments)),
+	m_pBody(move(a_rrpBody))
+{
+	assert(m_Arguments.size() > 0);
+}
+
+
+MacroNode::~MacroNode() {}
+
+
+MacroNode *MacroNode::Clone() const {
+	return new MacroNode(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone());
+}
+
+
+set<string> MacroNode::GetFreeVariables() const {
+	return m_FreeVariables;
+}
+
+
+AbstractValue const *MacroNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
+	return new Macro(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone());
+}
+
+
+string const MacroNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	string str = "macro ";
+	auto it = m_Arguments.begin();
+	str += *it;
+	for (++it; it != m_Arguments.end(); ++it) {
+		str += ", " + *it;
+	}
+	return str += " . " + m_pBody->ToString(BaseEnvironment());
+}
+
+
+set<string> ApplicationNode::ExtractFreeVariables(vector<Ptr<AbstractNode const>> const &rTerms) {
+	set<string> Names;
+	for (auto it = rTerms.begin(); it != rTerms.end(); ++it) {
+		set<string> const FreeVariables = (*it)->GetFreeVariables();
+		Names.insert(FreeVariables.begin(), FreeVariables.end());
+	}
+	return Names;
+}
+
+
 ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
-m_Terms(move(a_rrTerms)) {
+m_FreeVariables(ExtractFreeVariables(a_rrTerms)),
+	m_Terms(move(a_rrTerms))
+{
 	assert(m_Terms.size() > 1);
-
-	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
-		set<string> const FreeVariables = (*it)->GetFreeVariables();
-		m_FreeVariables.insert(FreeVariables.begin(), FreeVariables.end());
-	}
 }
 
 
