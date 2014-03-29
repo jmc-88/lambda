@@ -10,8 +10,8 @@ clean :
 bin :
 	mkdir -p bin
 
-bin/lambda : bin/Lexer.o bin/Error.o bin/Values.o bin/Environment.o bin/AST.o bin/Scanner.o bin/Main.o
-	$(CXX) $(CXXFLAGS) -o bin/lambda bin/Lexer.o bin/Error.o bin/Values.o bin/Environment.o bin/AST.o bin/Scanner.o bin/Main.o
+bin/lambda : bin/Lexer.o bin/Error.o bin/Values.o bin/Environment.o bin/AST.o bin/Scanner.o bin/BuiltIn.o bin/Main.o
+	$(CXX) $(CXXFLAGS) -o bin/lambda bin/Lexer.o bin/Error.o bin/Values.o bin/Environment.o bin/AST.o bin/Scanner.o bin/BuiltIn.o bin/Main.o
 
 inc/PCH.h.gch : inc/PCH.h
 	$(CXX) $(CXXFLAGS) -o inc/PCH.h.gch inc/PCH.h
@@ -33,6 +33,9 @@ bin/AST.o : bin inc/PCH.h.gch inc/AST.h src/AST.cpp
 
 bin/Scanner.o : bin inc/PCH.h.gch inc/Scanner.h src/Scanner.cpp
 	$(CXX) $(CXXFLAGS) -c -o bin/Scanner.o src/Scanner.cpp
+
+bin/BuiltIn.o : bin inc/PCH.h.gch inc/BuiltIn.h src/BuiltIn.cpp
+	$(CXX) $(CXXFLAGS) -c -o bin/BuiltIn.o src/BuiltIn.cpp
 
 bin/Main.o : bin inc/PCH.h.gch src/Main.cpp
 	$(CXX) $(CXXFLAGS) -c -o bin/Main.o src/Main.cpp

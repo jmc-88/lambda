@@ -53,16 +53,16 @@ Z lambda scan, list, value . if (= value (head list)) (lambda x . value) (lambda
 The following predefined terms are readily available and you can use them without defining them (descriptions in angle brackets indicate native code implementation):
 
 ```
+nil    = lambda x, y . y
 true   = lambda x, y . x
 false  = lambda x, y . y
-nil    = false
 
-not  = lambda a . a false true
-and  = lambda a, b . a b false
-or   = lambda a, b . a true b
-xor  = lambda a, b . a (not b) b
+not  = macro a . a false true
+and  = macro a, b . a (lambda x . b) (lambda x . false) nil
+or   = macro a, b . a (lambda x . true) (lambda x . b) nil
+xor  = macro a, b . a (lambda x . not b) (lambda x . b) nil
 
-if  = lambda condition, then, else . condition then else nil
+if  = macro condition, then, else . condition (lambda x . then) (lambda x . else) nil
 
 Z  = lambda f . (lambda x . f (lambda v . x x v)) (lambda x . f (lambda v . x x v))
 

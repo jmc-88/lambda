@@ -3,6 +3,7 @@
 #include <Lexer.h>
 #include <Scanner.h>
 #include <Values.h>
+#include <BuiltIn.h>
 
 int main() {
 	string strLine;
@@ -14,7 +15,7 @@ int main() {
 			cout << "      = " << flush;
 			Lexer Lexer(iss);
 			Scanner Scanner(Lexer);
-			Ptr<AbstractValue const> pResult = Scanner.Scan()->Evaluate();
+			Ptr<AbstractValue const> pResult = Scanner.Scan()->Evaluate(BuiltInEnvironment());
 			cout << *pResult << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "syntax error" << endl;
