@@ -65,12 +65,6 @@ struct VariableNode :
 struct FunctionNode :
 	public AbstractNode
 {
-private:
-	set<string> const m_FreeVariables;
-
-	static set<string> ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody);
-
-public:
 	vector<string> const m_Arguments;
 	Ptr<AbstractNode const> const m_pBody;
 
@@ -82,19 +76,12 @@ public:
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
-
 };
 
 
 struct MacroNode :
 	public AbstractNode
 {
-private:
-	set<string> const m_FreeVariables;
-
-	static set<string> ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody);
-
-public:
 	vector<string> const m_Arguments;
 	Ptr<AbstractNode const> const m_pBody;
 
@@ -106,19 +93,12 @@ public:
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
-
 };
 
 
 struct ApplicationNode :
 	public AbstractNode
 {
-private:
-	set<string> const m_FreeVariables;
-
-	static set<string> ExtractFreeVariables(vector<Ptr<AbstractNode const>> const &rTerms);
-
-public:
 	vector<Ptr<AbstractNode const>> const m_Terms;
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
@@ -129,7 +109,6 @@ public:
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
-
 };
 
 

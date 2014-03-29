@@ -89,19 +89,9 @@ string const VariableNode::ToString(AbstractEnvironment const &rEnvironment) con
 }
 
 
-set<string> FunctionNode::ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody) {
-	set<string> FreeVariables = rpBody->GetFreeVariables();
-	for (auto it = rArguments.begin(); it != rArguments.end(); ++it) {
-		FreeVariables.erase(*it);
-	}
-	return FreeVariables;
-}
-
-
 FunctionNode::FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
 AbstractNode(TYPE_FUNCTION),
-	m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
 	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
@@ -118,7 +108,11 @@ FunctionNode *FunctionNode::Clone() const {
 
 
 set<string> FunctionNode::GetFreeVariables() const {
-	return m_FreeVariables;
+	set<string> FreeVariables = m_pBody->GetFreeVariables();
+	for (auto it = m_Arguments.begin(); it != m_Arguments.end(); ++it) {
+		FreeVariables.erase(*it);
+	}
+	return FreeVariables;
 }
 
 
@@ -131,7 +125,7 @@ AbstractValue const *FunctionNode::Evaluate(AbstractEnvironment const &rEnvironm
 	return new Closure(
 		vector<string>(m_Arguments.begin(), m_Arguments.end()),
 		m_pBody->Clone(),
-		rEnvironment.Capture(set<string>(m_FreeVariables.begin(), m_FreeVariables.end()))
+		rEnvironment.Capture(GetFreeVariables())
 		);
 }
 
@@ -147,19 +141,9 @@ string const FunctionNode::ToString(AbstractEnvironment const &rEnvironment) con
 }
 
 
-set<string> MacroNode::ExtractFreeVariables(vector<string> const &rArguments, Ptr<AbstractNode const> const &rpBody) {
-	set<string> FreeVariables = rpBody->GetFreeVariables();
-	for (auto it = rArguments.begin(); it != rArguments.end(); ++it) {
-		FreeVariables.erase(*it);
-	}
-	return FreeVariables;
-}
-
-
 MacroNode::MacroNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
 AbstractNode(TYPE_MACRO),
-	m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
 	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
@@ -176,7 +160,7 @@ MacroNode *MacroNode::Clone() const {
 
 
 set<string> MacroNode::GetFreeVariables() const {
-	return m_FreeVariables;
+	throw InternalError();
 }
 
 
@@ -201,20 +185,9 @@ string const MacroNode::ToString(AbstractEnvironment const &rEnvironment) const 
 }
 
 
-set<string> ApplicationNode::ExtractFreeVariables(vector<Ptr<AbstractNode const>> const &rTerms) {
-	set<string> Names;
-	for (auto it = rTerms.begin(); it != rTerms.end(); ++it) {
-		set<string> const FreeVariables = (*it)->GetFreeVariables();
-		Names.insert(FreeVariables.begin(), FreeVariables.end());
-	}
-	return Names;
-}
-
-
 ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
 AbstractNode(TYPE_APPLICATION),
-	m_FreeVariables(ExtractFreeVariables(a_rrTerms)),
 	m_Terms(move(a_rrTerms))
 {
 	assert(m_Terms.size() > 1);
@@ -234,7 +207,21 @@ ApplicationNode *ApplicationNode::Clone() const {
 
 
 set<string> ApplicationNode::GetFreeVariables() const {
-	return m_FreeVariables;
+	set<string> Names;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		set<string> const FreeVariables = (*it)->GetFreeVariables();
+		Names.insert(FreeVariables.begin(), FreeVariables.end());
+	}
+	return Names;
+}
+
+
+Ptr<AbstractNode const> ApplicationNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	vector<Ptr<AbstractNode const>> Terms;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		Terms.push_back((*it)->Preprocess(rContext));
+	}
+	return new ApplicationNode(move(Terms));
 }
 
 
@@ -282,4 +269,52 @@ string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) 
 		str += "(" + (*it)->ToString(rEnvironment) + ")";
 	}
 	return str;
+}
+
+
+ExpansionNode::ExpansionNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
+	:
+AbstractNode(TYPE_EXPANSION),
+	m_Terms(move(a_rrTerms))
+{
+	assert(m_Terms.size() > 0);
+}
+
+
+ExpansionNode::~ExpansionNode() {}
+
+
+ExpansionNode *ExpansionNode::Clone() const {
+	vector<Ptr<AbstractNode const>> Terms;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		Terms.push_back((*it)->Clone());
+	}
+	return new ExpansionNode(move(Terms));
+}
+
+
+set<string> ExpansionNode::GetFreeVariables() const {
+	throw InternalError();
+}
+
+
+Ptr<AbstractNode const> ExpansionNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	auto it = m_Terms.begin();
+	Ptr<AbstractNode const> pLeft = (*it)->Preprocess(rContext);
+	if (pLeft->m_Type != TYPE_MACRO) {
+		throw PreprocessError();
+	} else {
+		Ptr<MacroNode const> const pMacro((MacroNode const*)pLeft.Detach());
+		// TODO
+	}
+}
+
+
+AbstractValue const *ExpansionNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
+	throw InternalError();
+}
+
+
+string const ExpansionNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	throw InternalError();
 }
