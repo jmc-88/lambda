@@ -18,6 +18,7 @@ private:
 	Ptr<AbstractNode const> ScanVariable();
 	Ptr<AbstractNode const> ScanParens();
 	Ptr<AbstractNode const> ScanFunction(Lexer::Token const Terminator);
+	Ptr<AbstractNode const> ScanMacro(Lexer::Token const Terminator);
 
 public:
 	explicit Scanner(Lexer &a_rLexer);

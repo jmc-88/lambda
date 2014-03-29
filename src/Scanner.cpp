@@ -34,6 +34,8 @@ Ptr<AbstractNode const> Scanner::ScanTerm(Lexer::Token const Terminator) {
 		return ScanVariable();
 	case Lexer::TOKEN_KEYWORD_LAMBDA:
 		return ScanFunction(Terminator);
+	case Lexer::TOKEN_KEYWORD_MACRO:
+		return ScanMacro(Terminator);
 	case Lexer::TOKEN_LEFT_PARENS:
 		return ScanParens();
 	default:
@@ -122,6 +124,30 @@ Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
 		} else {
 			m_rLexer.Next();
 			return new FunctionNode(move(Arguments), ScanApplication(Terminator));
+		}
+	}
+}
+
+
+Ptr<AbstractNode const> Scanner::ScanMacro(Lexer::Token const Terminator) {
+	assert(m_rLexer.Current() == Lexer::TOKEN_KEYWORD_MACRO);
+	if (m_rLexer.Next() != Lexer::TOKEN_IDENTIFIER) {
+		throw SyntaxError();
+	} else {
+		vector<string> Arguments;
+		Arguments.push_back(m_rLexer.GetString());
+		while (m_rLexer.Next() == Lexer::TOKEN_COMMA) {
+			if (m_rLexer.Next() != Lexer::TOKEN_IDENTIFIER) {
+				throw SyntaxError();
+			} else {
+				Arguments.push_back(m_rLexer.GetString());
+			}
+		}
+		if (m_rLexer.Current() != Lexer::TOKEN_POINT) {
+			throw SyntaxError();
+		} else {
+			m_rLexer.Next();
+			return new MacroNode(move(Arguments), ScanApplication(Terminator));
 		}
 	}
 }
