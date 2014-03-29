@@ -65,7 +65,7 @@ xor  = macro a, b . a (lambda x . not b) (lambda x . b) nil
 
 if  = macro condition, then, else . condition (lambda x . then) (lambda x . else) nil
 
-Z  = lambda f . (lambda x . f (lambda v . x x v)) (lambda x . f (lambda v . x x v))
+Z  = lambda f . (lambda x . f lambda v . x x v) (lambda x . f lambda v . x x v)
 
 =   = <value comparison>
 !=  = <negated value comparison>
