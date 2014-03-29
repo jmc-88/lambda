@@ -15,8 +15,7 @@ int main() {
 			cout << "      = " << flush;
 			Lexer Lexer(iss);
 			Scanner Scanner(Lexer);
-			Ptr<AbstractValue const> pResult = Scanner.Scan()->Evaluate(BuiltInEnvironment());
-			cout << *pResult << endl;
+			cout << *(Scanner.Scan()->Evaluate(BuiltInEnvironment())) << endl;
 		} catch (SyntaxError const &re) {
 			cerr << "syntax error" << endl;
 		} catch (InternalError const &re) {
