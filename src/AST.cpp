@@ -170,7 +170,7 @@ Ptr<AbstractNode const> MacroNode::Preprocess(AbstractPreprocessContext const &r
 
 
 AbstractValue const *MacroNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	throw InternalError();
+	throw PreprocessError();
 }
 
 
