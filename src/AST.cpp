@@ -3,12 +3,18 @@
 #include <Error.h>
 
 
+AbstractNode::AbstractNode(Type const a_Type)
+	:
+m_Type(a_Type) {}
+
+
 AbstractNode::~AbstractNode() {}
 
 
 LiteralNode::LiteralNode(AbstractValue const *a_pValue)
 	:
-m_pValue(a_pValue) {}
+AbstractNode(TYPE_LITERAL),
+	m_pValue(a_pValue) {}
 
 
 LiteralNode::~LiteralNode() {}
@@ -24,6 +30,11 @@ set<string> LiteralNode::GetFreeVariables() const {
 }
 
 
+Ptr<AbstractNode const> LiteralNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	return new LiteralNode(m_pValue);
+}
+
+
 AbstractValue const *LiteralNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
 	return m_pValue;
 }
@@ -36,7 +47,8 @@ string const LiteralNode::ToString(AbstractEnvironment const &rEnvironment) cons
 
 VariableNode::VariableNode(string const &a_rstrName)
 	:
-m_strName(a_rstrName) {}
+AbstractNode(TYPE_VARIABLE),
+	m_strName(a_rstrName) {}
 
 
 VariableNode::~VariableNode() {}
@@ -51,6 +63,15 @@ set<string> VariableNode::GetFreeVariables() const {
 	set<string> FreeVariables;
 	FreeVariables.insert(m_strName);
 	return FreeVariables;
+}
+
+
+Ptr<AbstractNode const> VariableNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	if (rContext.Has(m_strName)) {
+		return rContext[m_strName]->Clone();
+	} else {
+		return new VariableNode(m_strName);
+	}
 }
 
 
@@ -79,7 +100,8 @@ set<string> FunctionNode::ExtractFreeVariables(vector<string> const &rArguments,
 
 FunctionNode::FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
-m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
+AbstractNode(TYPE_FUNCTION),
+	m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
 	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
@@ -97,6 +119,11 @@ FunctionNode *FunctionNode::Clone() const {
 
 set<string> FunctionNode::GetFreeVariables() const {
 	return m_FreeVariables;
+}
+
+
+Ptr<AbstractNode const> FunctionNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	return new FunctionNode(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Preprocess(rContext));
 }
 
 
@@ -131,7 +158,8 @@ set<string> MacroNode::ExtractFreeVariables(vector<string> const &rArguments, Pt
 
 MacroNode::MacroNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody)
 	:
-m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
+AbstractNode(TYPE_MACRO),
+	m_FreeVariables(ExtractFreeVariables(a_rrArguments, a_rrpBody)),
 	m_Arguments(move(a_rrArguments)),
 	m_pBody(move(a_rrpBody))
 {
@@ -152,8 +180,13 @@ set<string> MacroNode::GetFreeVariables() const {
 }
 
 
+Ptr<AbstractNode const> MacroNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	return new MacroNode(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Preprocess(rContext));
+}
+
+
 AbstractValue const *MacroNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	return new Macro(vector<string>(m_Arguments.begin(), m_Arguments.end()), m_pBody->Clone());
+	throw InternalError();
 }
 
 
@@ -180,7 +213,8 @@ set<string> ApplicationNode::ExtractFreeVariables(vector<Ptr<AbstractNode const>
 
 ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
-m_FreeVariables(ExtractFreeVariables(a_rrTerms)),
+AbstractNode(TYPE_APPLICATION),
+	m_FreeVariables(ExtractFreeVariables(a_rrTerms)),
 	m_Terms(move(a_rrTerms))
 {
 	assert(m_Terms.size() > 1);

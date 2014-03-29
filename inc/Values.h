@@ -101,17 +101,4 @@ struct Closure :
 };
 
 
-struct Macro :
-	public AbstractValue
-{
-	vector<string> m_Arguments;
-	Ptr<AbstractNode const> m_pBody;
-
-	Macro(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
-	virtual ~Macro();
-
-	virtual operator string const () const;
-};
-
-
 ostream &operator << (ostream &ros, AbstractValue const &rValue);

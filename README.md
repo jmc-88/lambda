@@ -5,6 +5,7 @@ Untyped lambda calculus implementation.
 Features:
 * immutable data,
 * eager argument evaluation and call-by-value semantics,
+* macros (functions with lazy evaluation and call-by-name semantics),
 * left-to-right associativity for applications,
 	* i.e. `a b c` is equivalent to `(a b) c`
 * native support for N-ary functions,
@@ -33,10 +34,10 @@ lambda x . x
 (lambda x . x x)(lambda x . x x)
 
 # factorial
-Z lambda factorial, n . if (< n 1) (lambda x . 1) (lambda x . * n (factorial (- n 1)))
+Z lambda factorial, n . if (< n 1) 1 (* n (factorial (- n 1)))
 
 # fibonacci
-Z lambda fibonacci, i . if (< i 2) (lambda x . 1) (lambda x . + (fibonacci (- i 1)) (fibonacci (- i 2)))
+Z lambda fibonacci, i . if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
 
 # a list of 4 integers: 3, 6, 2, 5
 list 3 (list 6 (list 2 (lend 5)))
@@ -45,7 +46,7 @@ list 3 (list 6 (list 2 (lend 5)))
 Z lambda print_list, list . tail list (lambda tail . and (print (+ (head list) ', ')) (print_list tail)) (lambda x . print (head list))
 
 # scanning a list looking for a value
-Z lambda scan, list, value . if (= value (head list)) (lambda x . value) (lambda x . scan (tail list))
+Z lambda scan, list, value . if (= value (head list)) value (scan (tail list))
 ```
 
 ## Language Utilities
@@ -62,7 +63,7 @@ and  = lambda a, b . a b false
 or   = lambda a, b . a true b
 xor  = lambda a, b . a (not b) b
 
-if  = lambda condition, then, else . condition then else nil
+if  = lambda condition . macro then, else . condition then else
 
 Z  = lambda f . (lambda x . f (lambda v . x x v)) (lambda x . f (lambda v . x x v))
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Preprocess.h>
 #include <Environment.h>
 #include <Values.h>
 
@@ -7,9 +8,23 @@
 struct AbstractNode :
 	public Clonable
 {
+	enum Type {
+		TYPE_LITERAL,
+		TYPE_VARIABLE,
+		TYPE_FUNCTION,
+		TYPE_MACRO,
+		TYPE_APPLICATION,
+		TYPE_EXPANSION
+	};
+
+	Type const m_Type;
+
+	explicit AbstractNode(Type const a_Type);
 	virtual ~AbstractNode();
+
 	virtual AbstractNode *Clone() const = 0;
 	virtual set<string> GetFreeVariables() const = 0;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const = 0;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment = BaseEnvironment()) const = 0;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const = 0;
 };
@@ -25,6 +40,7 @@ struct LiteralNode :
 
 	virtual LiteralNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
@@ -40,6 +56,7 @@ struct VariableNode :
 
 	virtual VariableNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };
@@ -62,6 +79,7 @@ public:
 
 	virtual FunctionNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 
@@ -85,6 +103,7 @@ public:
 
 	virtual MacroNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 
@@ -107,7 +126,24 @@ public:
 
 	virtual ApplicationNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 
+};
+
+
+struct ExpansionNode :
+	public AbstractNode
+{
+	vector<Ptr<AbstractNode const>> const m_Terms;
+
+	explicit ExpansionNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
+	virtual ~ExpansionNode();
+
+	virtual ExpansionNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };

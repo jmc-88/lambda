@@ -17,6 +17,12 @@ struct SyntaxError :
 };
 
 
+struct PreprocessError :
+	public Error
+{
+};
+
+
 struct RuntimeError :
 	public Error
 {
