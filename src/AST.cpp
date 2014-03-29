@@ -318,3 +318,26 @@ AbstractValue const *ExpansionNode::Evaluate(AbstractEnvironment const &rEnviron
 string const ExpansionNode::ToString(AbstractEnvironment const &rEnvironment) const {
 	throw InternalError();
 }
+
+
+NativeNode::NativeNode()
+	:
+AbstractNode(TYPE_NATIVE) {}
+
+
+NativeNode::~NativeNode() {}
+
+
+set<string> NativeNode::GetFreeVariables() const {
+	return set<string>();
+}
+
+
+Ptr<AbstractNode const> NativeNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	return Clone();
+}
+
+
+string const NativeNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	return "< native implementation >";
+}

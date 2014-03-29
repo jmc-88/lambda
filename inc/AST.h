@@ -14,7 +14,8 @@ struct AbstractNode :
 		TYPE_FUNCTION,
 		TYPE_MACRO,
 		TYPE_APPLICATION,
-		TYPE_EXPANSION
+		TYPE_EXPANSION,
+		TYPE_NATIVE
 	};
 
 	Type const m_Type;
@@ -124,5 +125,18 @@ struct ExpansionNode :
 	virtual set<string> GetFreeVariables() const;
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+};
+
+
+struct NativeNode :
+	public AbstractNode
+{
+	NativeNode();
+	virtual ~NativeNode();
+	virtual NativeNode *Clone() const = 0;
+	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const = 0;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
 };

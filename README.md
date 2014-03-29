@@ -95,7 +95,7 @@ tail  = lambda list, f, g . second list f g
 
 print    = <prints the string argument to standard output, returns true>
 println  = <prints the string argument followed by a line terminator to standard output, returns true>
-input    = <reads a line from standard input and returns it as a string, excluding the line terminator>
+input    = <ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator>
 ```
 
 ## Known Issues
