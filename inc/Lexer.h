@@ -6,6 +6,7 @@ public:
 	enum Token {
 		TOKEN_IDENTIFIER,
 		TOKEN_KEYWORD_LAMBDA,
+		TOKEN_KEYWORD_MACRO,
 		TOKEN_LITERAL_INTEGER,
 		TOKEN_LITERAL_LONG,
 		TOKEN_LITERAL_FLOAT,
@@ -29,6 +30,14 @@ private:
 	signed int m_n;
 	signed long long m_l;
 	double m_f;
+
+	static bool IsSpace(int const ch);
+	static bool IsDigit(int const ch);
+	static bool IsAlpha(int const ch);
+	static bool IsIdentifierCharacter(int const ch);
+
+	int SkipSeparators();
+	Token ReadToken();
 
 public:
 	explicit Lexer(istream &a_ris);

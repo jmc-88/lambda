@@ -2,6 +2,7 @@
 #define __PCH_H__
 
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <sstream>

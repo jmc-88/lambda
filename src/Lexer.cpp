@@ -3,11 +3,176 @@
 #include <Error.h>
 
 
+bool Lexer::IsSpace(int const ch) {
+	return ch >= 0 && ::isspace(ch);
+}
+
+
+bool Lexer::IsDigit(int const ch) {
+	return ch >= 0 && ::isdigit(ch);
+}
+
+
+bool Lexer::IsAlpha(int const ch) {
+	return ch >= 0 && ::isalpha(ch);
+}
+
+
+bool Lexer::IsIdentifierCharacter(int const ch) {
+	return ch >= 0 && (::isalnum(ch) || ch == '_');
+}
+
+
+int Lexer::SkipSeparators() {
+	int ch;
+	while (true) {
+		ch = m_ris.get();
+		if (ch < 0) {
+			return ch;
+		} else if (ch > 127) {
+			throw SyntaxError();
+		} else if (ch == '#') {
+			do {
+				if ((ch = m_ris.get()) < 0) {
+					return ch;
+				}
+			} while (ch != '\n');
+		} else if (!::isspace(ch)) {
+			return ch;
+		}
+	}
+}
+
+
+Lexer::Token Lexer::ReadToken() {
+	while (true) {
+		int const ch = SkipSeparators();
+		if (ch < 0) {
+			return m_Token = TOKEN_END;
+		} else if (::isalpha(ch) || ch == '_') {
+			char const sz[] = { (char)ch, 0 };
+			string str = sz;
+			while (true) {
+				int const ch = m_ris.peek();
+				if (IsIdentifierCharacter(ch)) {
+					m_ris.get();
+					str += (char)ch;
+				} else {
+					break;
+				}
+			}
+			if (str == "lambda") {
+				m_Token = TOKEN_KEYWORD_LAMBDA;
+			} else if (str == "macro") {
+				m_Token = TOKEN_KEYWORD_MACRO;
+			} else {
+				m_Token = TOKEN_IDENTIFIER;
+				m_str = str;
+			}
+			return m_Token;
+		} else if (::isdigit(ch)) {
+			unsigned long long l = ch - '0';
+			while (IsDigit(m_ris.peek())) {
+				int const ch = m_ris.get();
+				l = l * 10 + (ch - '0');
+				if (l >= (unsigned long long)1 << 63) {
+					throw SyntaxError();
+				}
+			}
+			if (m_ris.peek() != '.') {
+				if (m_ris.peek() != 'i') {
+					if (l < (unsigned int)1 << 31) {
+						m_Token = TOKEN_LITERAL_INTEGER;
+						m_n = (signed int)l;
+					} else {
+						m_Token = TOKEN_LITERAL_LONG;
+						m_l = (signed long long)l;
+					}
+				} else {
+					m_ris.get();
+					m_Token = TOKEN_LITERAL_COMPLEX;
+					m_f = l;
+				}
+			} else {
+				m_ris.get();
+				int const ch = m_ris.get();
+				if (!IsDigit(ch)) {
+					throw SyntaxError();
+				}
+				double f = l + (ch - '0') / 10.0;
+				for (unsigned int n = -2; IsDigit(m_ris.peek()); --n) {
+					f += (m_ris.get() - '0') * ::pow(10, n);
+				}
+				if (m_ris.peek() != 'i') {
+					m_Token = TOKEN_LITERAL_FLOAT;
+				} else {
+					m_ris.get();
+					m_Token = TOKEN_LITERAL_COMPLEX;
+				}
+				m_f = f;
+			}
+			return m_Token;
+		} else if (ch == '\'') {
+			string str;
+			while (true) {
+				int const ch = m_ris.peek();
+				if (ch < 0) {
+					throw SyntaxError();
+				} else if (ch > 127) {
+					throw SyntaxError();
+				} else {
+					m_ris.get();
+					if (ch == '\'') {
+						break;
+					} else if (ch == '\\') {
+						int const ch2 = m_ris.get();
+						if (ch2 < 0) {
+							throw SyntaxError();
+						} else if (ch2 > 127) {
+							throw SyntaxError();
+						} else if (ch2 == '\'') {
+							str += '\'';
+						} else if (ch2 == '\\') {
+							str += '\\';
+						} else if (ch2 == '\n') {
+							str += '\n';
+						} else if (ch2 == '\r') {
+							str += '\r';
+						} else if (ch2 == '\t') {
+							str += '\t';
+						} else {
+							str += ch2;
+						}
+					} else {
+						str += (char)ch;
+					}
+				}
+			}
+			m_str = str;
+			return m_Token = TOKEN_LITERAL_STRING;
+		} else {
+			switch (ch) {
+			case '(':
+				return m_Token = TOKEN_LEFT_PARENS;
+			case ')':
+				return m_Token = TOKEN_RIGHT_PARENS;
+			case ',':
+				return m_Token = TOKEN_COMMA;
+			case '.':
+				return m_Token = TOKEN_POINT;
+			default:
+				throw SyntaxError();
+			}
+		}
+	}
+}
+
+
 Lexer::Lexer(istream &a_ris)
 	:
 m_ris(a_ris) {
 	m_ris.exceptions(ios::badbit);
-	Next();
+	m_Token = ReadToken();
 }
 
 
@@ -32,102 +197,7 @@ Lexer::Token Lexer::Next() {
 		m_Buffer.pop();
 		return m_Token = Token;
 	} else {
-		while (true) {
-			int const ch = m_ris.get();
-			if (ch < 0) {
-				return m_Token = TOKEN_END;
-			} else if (ch > 127) {
-				throw SyntaxError();
-			} else if (::isspace(ch)) {
-				continue;
-			} else if (::isalpha(ch) || ch == '_') {
-				string str(1, (unsigned char)ch);
-				while (true) {
-					int const ch = m_ris.peek();
-					if (::isalnum(ch) || ch == '_') {
-						m_ris.get();
-						str += (unsigned char)ch;
-					} else {
-						break;
-					}
-				}
-				if (str != "lambda") {
-					m_Token = TOKEN_IDENTIFIER;
-					m_str = str;
-				} else {
-					m_Token = TOKEN_KEYWORD_LAMBDA;
-				}
-				return m_Token;
-			} else if (::isdigit(ch)) {
-				unsigned long long l = ch - '0';
-				while (::isdigit(m_ris.peek())) {
-					int const ch = m_ris.get();
-					l = l * 10 + (ch - '0');
-					if (l >= (unsigned long long)1 << 63) {
-						throw SyntaxError();
-					}
-				}
-				if (l < (unsigned int)1 << 31) {
-					m_Token = TOKEN_LITERAL_INTEGER;
-					m_n = (signed int)l;
-				} else {
-					m_Token = TOKEN_LITERAL_LONG;
-					m_l = (signed long long)l;
-				}
-				return m_Token;
-			} else if (ch == '\'') {
-				string str;
-				while (true) {
-					int const ch = m_ris.peek();
-					if (ch < 0) {
-						throw SyntaxError();
-					} else if (ch > 127) {
-						throw SyntaxError();
-					} else {
-						m_ris.get();
-						if (ch == '\'') {
-							break;
-						} else if (ch == '\\') {
-							int const ch2 = m_ris.get();
-							if (ch2 < 0) {
-								throw SyntaxError();
-							} else if (ch2 > 127) {
-								throw SyntaxError();
-							} else if (ch2 == '\'') {
-								str += '\'';
-							} else if (ch2 == '\\') {
-								str += '\\';
-							} else if (ch2 == '\n') {
-								str += '\n';
-							} else if (ch2 == '\r') {
-								str += '\r';
-							} else if (ch2 == '\t') {
-								str += '\t';
-							} else {
-								str += ch2;
-							}
-						} else {
-							str += (char)ch;
-						}
-					}
-				}
-				m_str = str;
-				return m_Token = TOKEN_LITERAL_STRING;
-			} else {
-				switch (ch) {
-				case '(':
-					return m_Token = TOKEN_LEFT_PARENS;
-				case ')':
-					return m_Token = TOKEN_RIGHT_PARENS;
-				case ',':
-					return m_Token = TOKEN_COMMA;
-				case '.':
-					return m_Token = TOKEN_POINT;
-				default:
-					throw SyntaxError();
-				}
-			}
-		}
+		return m_Token = ReadToken();
 	}
 }
 
