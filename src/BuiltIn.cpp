@@ -119,7 +119,14 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 		new VariableNode("list"),
 		new FunctionNode({ "element", "next" }, new VariableNode("element"))
 	}), BaseEnvironment());
-	// TODO tail
+	Terms["tail"] = new Closure({ "list", "f", "g" }, new ApplicationNode({
+		new VariableNode("list"),
+		new FunctionNode({ "element", "next" }, new ApplicationNode({
+			new VariableNode("next"),
+			new VariableNode("f"),
+			new VariableNode("g")
+		}))
+	}), BaseEnvironment());
 
 	Terms["print"] = new Closure({ "value" }, new PrintNode(), BaseEnvironment());
 	Terms["println"] = new Closure({ "value" }, new PrintLnNode(), BaseEnvironment());
