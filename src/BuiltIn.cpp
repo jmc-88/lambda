@@ -67,17 +67,23 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 	Terms["true"] = g_pTrue;
 	Terms["false"] = g_pFalse;
 
-	//Terms["Z"] = new Closure(
-	//	{ "f" },
-	//	new ApplicationNode({ new FunctionNode(
-	//		{ "x" },
-	//		new ApplicationNode({ new VariableNode("f"), new FunctionNode(
-	//			{ "v" },
-	//			new ApplicationNode({ new VariableNode("x"), new VariableNode("x"), new VariableNode("v") })) })), new FunctionNode(
-	//		{ "x" },
-	//		new ApplicationNode({ new VariableNode("f"), new FunctionNode(
-	//			{ "v" },
-	//			new ApplicationNode({ new VariableNode("x"), new VariableNode("x"), new VariableNode("v") })) })) }), BaseEnvironment());
+	//Terms["Z"] = new Closure({ "f" }, new ApplicationNode({
+	//	new FunctionNode({ "x" }, new ApplicationNode({
+	//		new VariableNode("f"),
+	//		new FunctionNode({ "v" }, new ApplicationNode({
+	//			new VariableNode("x"),
+	//			new VariableNode("x"),
+	//			new VariableNode("v")
+	//		}))
+	//	})), new FunctionNode({ "x" }, new ApplicationNode({
+	//		new VariableNode("f"),
+	//		new FunctionNode({ "v" }, new ApplicationNode({
+	//			new VariableNode("x"),
+	//			new VariableNode("x"),
+	//			new VariableNode("v")
+	//		}))
+	//	}))
+	//}), BaseEnvironment());
 
 	Terms["print"] = new Closure({ "value" }, new PrintNode(), BaseEnvironment());
 	Terms["println"] = new Closure({ "value" }, new PrintLnNode(), BaseEnvironment());

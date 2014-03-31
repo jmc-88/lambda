@@ -113,22 +113,6 @@ struct ApplicationNode :
 };
 
 
-struct ExpansionNode :
-	public AbstractNode
-{
-	vector<Ptr<AbstractNode const>> const m_Terms;
-
-	explicit ExpansionNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
-	virtual ~ExpansionNode();
-
-	virtual ExpansionNode *Clone() const;
-	virtual set<string> GetFreeVariables() const;
-	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
-	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
-	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
-};
-
-
 struct NativeNode :
 	public AbstractNode
 {

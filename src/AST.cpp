@@ -221,6 +221,7 @@ Ptr<AbstractNode const> ApplicationNode::Preprocess(AbstractPreprocessContext co
 	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
 		Terms.push_back((*it)->Preprocess(rContext));
 	}
+	// TODO expand macros
 	return new ApplicationNode(move(Terms));
 }
 
@@ -272,54 +273,6 @@ string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) 
 }
 
 
-ExpansionNode::ExpansionNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
-	:
-AbstractNode(TYPE_EXPANSION),
-	m_Terms(move(a_rrTerms))
-{
-	assert(m_Terms.size() > 0);
-}
-
-
-ExpansionNode::~ExpansionNode() {}
-
-
-ExpansionNode *ExpansionNode::Clone() const {
-	vector<Ptr<AbstractNode const>> Terms;
-	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
-		Terms.push_back((*it)->Clone());
-	}
-	return new ExpansionNode(move(Terms));
-}
-
-
-set<string> ExpansionNode::GetFreeVariables() const {
-	throw InternalError();
-}
-
-
-Ptr<AbstractNode const> ExpansionNode::Preprocess(AbstractPreprocessContext const &rContext) const {
-	auto it = m_Terms.begin();
-	Ptr<AbstractNode const> pLeft = (*it)->Preprocess(rContext);
-	if (pLeft->m_Type != TYPE_MACRO) {
-		throw PreprocessError();
-	} else {
-		Ptr<MacroNode const> const pMacro((MacroNode const*)pLeft.Detach());
-		// TODO
-	}
-}
-
-
-AbstractValue const *ExpansionNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	throw InternalError();
-}
-
-
-string const ExpansionNode::ToString(AbstractEnvironment const &rEnvironment) const {
-	throw InternalError();
-}
-
-
 NativeNode::NativeNode()
 	:
 AbstractNode(TYPE_NATIVE) {}
@@ -339,5 +292,5 @@ Ptr<AbstractNode const> NativeNode::Preprocess(AbstractPreprocessContext const &
 
 
 string const NativeNode::ToString(AbstractEnvironment const &rEnvironment) const {
-	return "< native implementation >";
+	return "< native code >";
 }

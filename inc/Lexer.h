@@ -35,6 +35,7 @@ private:
 	static bool IsDigit(int const ch);
 	static bool IsAlpha(int const ch);
 	static bool IsIdentifierCharacter(int const ch);
+	static unsigned char GetHex(int const ch);
 
 	int SkipSeparators();
 	Token ReadToken();

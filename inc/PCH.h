@@ -10,6 +10,7 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <initializer_list>
 
 #include <Ptr.h>
 #include <Clonable.h>
