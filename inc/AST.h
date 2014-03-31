@@ -14,7 +14,6 @@ struct AbstractNode :
 		TYPE_FUNCTION,
 		TYPE_MACRO,
 		TYPE_APPLICATION,
-		TYPE_EXPANSION,
 		TYPE_NATIVE
 	};
 
@@ -100,9 +99,14 @@ struct MacroNode :
 struct ApplicationNode :
 	public AbstractNode
 {
+private:
+	static vector<Ptr<AbstractNode const>> InitializeTerms(initializer_list<AbstractNode const*> a_Terms);
+
+public:
 	vector<Ptr<AbstractNode const>> const m_Terms;
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
+	explicit ApplicationNode(initializer_list<AbstractNode const*> a_Terms);
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
@@ -110,6 +114,7 @@ struct ApplicationNode :
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+
 };
 
 

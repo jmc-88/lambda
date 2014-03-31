@@ -67,23 +67,59 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 	Terms["true"] = g_pTrue;
 	Terms["false"] = g_pFalse;
 
-	//Terms["Z"] = new Closure({ "f" }, new ApplicationNode({
-	//	new FunctionNode({ "x" }, new ApplicationNode({
-	//		new VariableNode("f"),
-	//		new FunctionNode({ "v" }, new ApplicationNode({
-	//			new VariableNode("x"),
-	//			new VariableNode("x"),
-	//			new VariableNode("v")
-	//		}))
-	//	})), new FunctionNode({ "x" }, new ApplicationNode({
-	//		new VariableNode("f"),
-	//		new FunctionNode({ "v" }, new ApplicationNode({
-	//			new VariableNode("x"),
-	//			new VariableNode("x"),
-	//			new VariableNode("v")
-	//		}))
-	//	}))
-	//}), BaseEnvironment());
+	Terms["Z"] = new Closure({ "f" }, new ApplicationNode({
+		new FunctionNode({ "x" }, new ApplicationNode({
+			new VariableNode("f"),
+			new FunctionNode({ "v" }, new ApplicationNode({
+				new VariableNode("x"),
+				new VariableNode("x"),
+				new VariableNode("v")
+			}))
+		})), new FunctionNode({ "x" }, new ApplicationNode({
+			new VariableNode("f"),
+			new FunctionNode({ "v" }, new ApplicationNode({
+				new VariableNode("x"),
+				new VariableNode("x"),
+				new VariableNode("v")
+			}))
+		}))
+	}), BaseEnvironment());
+
+	Terms["pair"] = new Closure({ "x", "y", "z" }, new ApplicationNode({
+		new VariableNode("z"),
+		new VariableNode("x"),
+		new VariableNode("y")
+	}), BaseEnvironment());
+	Terms["first"] = new Closure({ "pair" }, new ApplicationNode({
+		new VariableNode("pair"),
+		new FunctionNode({ "x", "y" }, new VariableNode("x"))
+	}), BaseEnvironment());
+	Terms["second"] = new Closure({ "pair" }, new ApplicationNode({
+		new VariableNode("pair"),
+		new FunctionNode({ "x", "y" }, new VariableNode("y"))
+	}), BaseEnvironment());
+
+	Terms["list"] = new Closure({ "element", "next", "f" }, new ApplicationNode({
+		new VariableNode("f"),
+		new VariableNode("element"),
+		new FunctionNode({ "f", "g" }, new ApplicationNode({
+			new VariableNode("f"),
+			new VariableNode("next")
+		}))
+	}), BaseEnvironment());
+	Terms["lend"] = new Closure({ "element", "f" }, new ApplicationNode({
+		new VariableNode("f"),
+		new VariableNode("element"),
+		new FunctionNode({ "f", "g" }, new ApplicationNode({
+			new VariableNode("g"),
+			new FunctionNode({ "x", "y" }, new VariableNode("y"))
+		}))
+	}), BaseEnvironment());
+	Terms["head"] = new Closure({ "list" }, new ApplicationNode({
+		new VariableNode("list"),
+		new FunctionNode({ "element", "next" }, new VariableNode("element"))
+	}), BaseEnvironment());
+	// TODO tail
 
 	Terms["print"] = new Closure({ "value" }, new PrintNode(), BaseEnvironment());
 	Terms["println"] = new Closure({ "value" }, new PrintLnNode(), BaseEnvironment());

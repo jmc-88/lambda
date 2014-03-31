@@ -185,6 +185,16 @@ string const MacroNode::ToString(AbstractEnvironment const &rEnvironment) const 
 }
 
 
+vector<Ptr<AbstractNode const>> ApplicationNode::InitializeTerms(initializer_list<AbstractNode const*> a_Terms) {
+	vector<Ptr<AbstractNode const>> Terms;
+	for (auto it = a_Terms.begin(); it != a_Terms.end(); ++it) {
+		AbstractNode const *pTerm = *it;
+		Terms.push_back(move(pTerm));
+	}
+	return Terms;
+}
+
+
 ApplicationNode::ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms)
 	:
 AbstractNode(TYPE_APPLICATION),
@@ -192,6 +202,12 @@ AbstractNode(TYPE_APPLICATION),
 {
 	assert(m_Terms.size() > 1);
 }
+
+
+ApplicationNode::ApplicationNode(initializer_list<AbstractNode const*> a_Terms)
+	:
+AbstractNode(TYPE_APPLICATION),
+	m_Terms(InitializeTerms(a_Terms)) {}
 
 
 ApplicationNode::~ApplicationNode() {}
