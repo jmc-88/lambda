@@ -43,7 +43,7 @@ Z lambda fibonacci, i . if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
 list 3 (list 6 (list 2 (list 5 nil)))
 
 # printing a list to standard output
-Z lambda print_list, list . and (head list (lambda head . print head) false) (tail list (lambda tail . and (print ', ') (print_list tail)) true)
+Z lambda print_list, list . and (head list (lambda head . print head) false) (tail list (lambda tail . and (print ', ') (print_list tail)) false)
 
 # scanning a list looking for a value
 Z lambda search_list, list, value . or (head list (lambda head . = head value) false) (tail list (lambda tail . search_list tail value) false)
