@@ -5,6 +5,24 @@
 #include <Error.h>
 
 
+static Closure const *const g_pZCombinator = new Closure({ "f" }, new ApplicationNode({
+	new FunctionNode({ "x" }, new ApplicationNode({
+		new VariableNode("f"),
+		new FunctionNode({ "v" }, new ApplicationNode({
+			new VariableNode("x"),
+			new VariableNode("x"),
+			new VariableNode("v")
+		}))
+	})), new FunctionNode({ "x" }, new ApplicationNode({
+		new VariableNode("f"),
+		new FunctionNode({ "v" }, new ApplicationNode({
+			new VariableNode("x"),
+			new VariableNode("x"),
+			new VariableNode("v")
+		}))
+	}))
+}), BaseEnvironment());
+
 static Closure const *const g_pTrue = new Closure({ "x", "y" }, new VariableNode("x"), BaseEnvironment());
 static Closure const *const g_pFalse = new Closure({ "x", "y" }, new VariableNode("y"), BaseEnvironment());
 
@@ -132,23 +150,7 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 	Terms["true"] = g_pTrue;
 	Terms["false"] = g_pFalse;
 
-	Terms["Z"] = new Closure({ "f" }, new ApplicationNode({
-		new FunctionNode({ "x" }, new ApplicationNode({
-			new VariableNode("f"),
-			new FunctionNode({ "v" }, new ApplicationNode({
-				new VariableNode("x"),
-				new VariableNode("x"),
-				new VariableNode("v")
-			}))
-		})), new FunctionNode({ "x" }, new ApplicationNode({
-			new VariableNode("f"),
-			new FunctionNode({ "v" }, new ApplicationNode({
-				new VariableNode("x"),
-				new VariableNode("x"),
-				new VariableNode("v")
-			}))
-		}))
-	}), BaseEnvironment());
+	Terms["Z"] = g_pZCombinator;
 
 	Terms["pair"] = new Closure({ "x", "y", "z" }, new ApplicationNode({
 		new VariableNode("z"),
@@ -161,6 +163,16 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 	}), BaseEnvironment());
 	Terms["second"] = new Closure({ "pair" }, new ApplicationNode({
 		new VariableNode("pair"),
+		new FunctionNode({ "x", "y" }, new VariableNode("y"))
+	}), BaseEnvironment());
+
+	Terms["list"] = new Closure({ "element", "next", "f", "g" }, new ApplicationNode({
+		new VariableNode("f"),
+		new VariableNode("element"),
+		new VariableNode("next")
+	}), BaseEnvironment());
+	Terms["nil"] = new Closure({ "f", "g" }, new ApplicationNode({
+		new VariableNode("g"),
 		new FunctionNode({ "x", "y" }, new VariableNode("y"))
 	}), BaseEnvironment());
 
