@@ -2,11 +2,60 @@
 #include <BuiltIn.h>
 #include <Values.h>
 #include <AST.h>
+#include <Error.h>
 
 
-static Closure const *const g_pNil = new Closure({ "x", "y" }, new VariableNode("y"), BaseEnvironment());
 static Closure const *const g_pTrue = new Closure({ "x", "y" }, new VariableNode("x"), BaseEnvironment());
 static Closure const *const g_pFalse = new Closure({ "x", "y" }, new VariableNode("y"), BaseEnvironment());
+
+
+struct ThrowNode :
+	public NativeNode
+{
+	virtual ~ThrowNode() {}
+
+	virtual ThrowNode *Clone() const {
+		return new ThrowNode();
+	}
+
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
+		assert(rEnvironment.Has("value"));
+		throw UserException(rEnvironment["value"]);
+	}
+};
+
+
+struct ExitNode :
+	public NativeNode
+{
+	virtual ~ExitNode() {}
+
+	virtual ExitNode *Clone() const {
+		return new ExitNode();
+	}
+
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
+		assert(rEnvironment.Has("code"));
+		throw ExitException(rEnvironment["code"]);
+	}
+};
+
+
+struct InputNode :
+	public NativeNode
+{
+	virtual ~InputNode() {}
+
+	virtual InputNode *Clone() const {
+		return new InputNode();
+	}
+
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
+		string strLine;
+		::getline(cin, strLine);
+		return new StringValue(strLine);
+	}
+};
 
 
 struct PrintNode :
@@ -43,19 +92,36 @@ struct PrintLnNode :
 };
 
 
-struct InputNode :
+struct ErrorNode :
 	public NativeNode
 {
-	virtual ~InputNode() {}
+	virtual ~ErrorNode() {}
 
-	virtual InputNode *Clone() const {
-		return new InputNode();
+	virtual ErrorNode *Clone() const {
+		return new ErrorNode();
 	}
 
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
-		string strLine;
-		::getline(cin, strLine);
-		return new StringValue(strLine);
+		assert(rEnvironment.Has("value"));
+		cerr << *(rEnvironment["value"]) << flush;
+		return g_pTrue;
+	}
+};
+
+
+struct ErrorLnNode :
+	public NativeNode
+{
+	virtual ~ErrorLnNode() {}
+
+	virtual ErrorLnNode *Clone() const {
+		return new ErrorLnNode();
+	}
+
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
+		assert(rEnvironment.Has("value"));
+		cerr << *(rEnvironment["value"]) << endl;
+		return g_pTrue;
 	}
 };
 
@@ -63,7 +129,6 @@ struct InputNode :
 map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 	map<string const, AbstractValue const*> Terms;
 
-	Terms["nil"] = g_pNil;
 	Terms["true"] = g_pTrue;
 	Terms["false"] = g_pFalse;
 
@@ -99,38 +164,13 @@ map<string const, AbstractValue const*> BuiltInEnvironment::BuildTerms() {
 		new FunctionNode({ "x", "y" }, new VariableNode("y"))
 	}), BaseEnvironment());
 
-	Terms["list"] = new Closure({ "element", "next", "f" }, new ApplicationNode({
-		new VariableNode("f"),
-		new VariableNode("element"),
-		new FunctionNode({ "f", "g" }, new ApplicationNode({
-			new VariableNode("f"),
-			new VariableNode("next")
-		}))
-	}), BaseEnvironment());
-	Terms["lend"] = new Closure({ "element", "f" }, new ApplicationNode({
-		new VariableNode("f"),
-		new VariableNode("element"),
-		new FunctionNode({ "f", "g" }, new ApplicationNode({
-			new VariableNode("g"),
-			new FunctionNode({ "x", "y" }, new VariableNode("y"))
-		}))
-	}), BaseEnvironment());
-	Terms["head"] = new Closure({ "list" }, new ApplicationNode({
-		new VariableNode("list"),
-		new FunctionNode({ "element", "next" }, new VariableNode("element"))
-	}), BaseEnvironment());
-	Terms["tail"] = new Closure({ "list", "f", "g" }, new ApplicationNode({
-		new VariableNode("list"),
-		new FunctionNode({ "element", "next" }, new ApplicationNode({
-			new VariableNode("next"),
-			new VariableNode("f"),
-			new VariableNode("g")
-		}))
-	}), BaseEnvironment());
-
+	Terms["exit"] = new Closure({ "code" }, new ExitNode(), BaseEnvironment());
+	Terms["throw"] = new Closure({ "value" }, new ThrowNode(), BaseEnvironment());
+	Terms["input"] = new Closure({ "x" }, new InputNode(), BaseEnvironment());
 	Terms["print"] = new Closure({ "value" }, new PrintNode(), BaseEnvironment());
 	Terms["println"] = new Closure({ "value" }, new PrintLnNode(), BaseEnvironment());
-	Terms["input"] = new Closure({ "x" }, new InputNode(), BaseEnvironment());
+	Terms["error"] = new Closure({ "value" }, new ErrorNode(), BaseEnvironment());
+	Terms["errorln"] = new Closure({ "value" }, new ErrorLnNode(), BaseEnvironment());
 
 	return Terms;
 }

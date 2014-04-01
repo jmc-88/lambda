@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Environment.h>
-#include <Values.h>
 
 
 struct AbstractValue {
