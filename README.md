@@ -92,6 +92,7 @@ nil   = Z lambda nil, f, g . g nil
 head  = macro list, f, g . list f lambda x . g
 tail  = macro list, f, g . list (lambda element, next . f next) lambda x . g
 
+exit     = <immediately terminates the program and uses the argument as return code>
 throw    = <throws the argument as an exception, terminates the program>
 input    = <ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator>
 print    = <prints the string argument to standard output, returns true>
