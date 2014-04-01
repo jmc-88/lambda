@@ -319,6 +319,7 @@ set<string> LetNode::GetFreeVariables() const {
 	set<string> Set = m_pExpression->GetFreeVariables();
 	set<string> OtherSet = m_pRest->GetFreeVariables();
 	Set.insert(OtherSet.begin(), OtherSet.end());
+	Set.erase(m_strName);
 	return Set;
 }
 
