@@ -89,7 +89,7 @@ first   = macro pair . pair lambda first, second . first
 second  = macro pair . pair lambda first, second . second
 
 list  = lambda element, next, f, g . f element next
-nil   = Z lambda nil, f, g . g nil
+nil   = lambda f, g . g false
 head  = macro list, f, g . list f lambda x . g
 tail  = macro list, f, g . list (lambda element, next . f next) lambda x . g
 
