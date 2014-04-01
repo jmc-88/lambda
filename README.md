@@ -40,13 +40,13 @@ Z lambda factorial, n . if (< n 1) 1 (* n (factorial (- n 1)))
 Z lambda fibonacci, i . if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
 
 # a list of 4 integers: 3, 6, 2, 5
-list 3 (list 6 (list 2 (lend 5)))
+list 3 (list 6 (list 2 nil))
 
 # printing a list to standard output
-Z lambda print_list, list . tail list (lambda tail . and (print (+ (head list) ', ')) (print_list tail)) (lambda x . print (head list))
+Z lambda print_list, list . and (head list (lambda head . print head) false) (tail list (lambda tail . and (print ', ') (print_list tail)) true)
 
 # scanning a list looking for a value
-Z lambda scan, list, value . if (= value (head list)) value (scan (tail list))
+Z lambda search_list, list, value . or (head list (lambda head . = head value) false) (tail list (lambda tail . search_list tail value) false)
 ```
 
 ## Language Utilities
@@ -54,7 +54,6 @@ Z lambda scan, list, value . if (= value (head list)) value (scan (tail list))
 The following predefined terms are readily available and you can use them without defining them (descriptions in angle brackets indicate native code implementation):
 
 ```
-nil    = lambda x, y . y
 true   = lambda x, y . x
 false  = lambda x, y . y
 
@@ -85,21 +84,24 @@ Z  = lambda f . (lambda x . f lambda v . x x v) (lambda x . f lambda v . x x v)
 ^   = <bitwise XOR>
 
 pair    = lambda x, y, z . z x y
-first   = lambda pair . pair lambda x, y . x
-second  = lambda pair . pair lambda x, y . y
+first   = macro pair . pair lambda first, second . first
+second  = macro pair . pair lambda first, second . second
 
-list  = lambda element, next . pair element lambda f, g . f next
-lend  = lambda element . pair element lambda f, g . g nil
-head  = first
-tail  = lambda list, f, g . second list f g
+list  = lambda element, next, f, g . f element next
+nil   = Z lambda nil, f, g . g nil
+head  = macro list, f, g . list f lambda x . g
+tail  = macro list, f, g . list (lambda element, next . f next) lambda x . g
 
+throw    = <throws the argument as an exception, terminates the program>
+input    = <ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator>
 print    = <prints the string argument to standard output, returns true>
 println  = <prints the string argument followed by a line terminator to standard output, returns true>
-input    = <ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator>
+error    = <prints the string argument to standard error, returns true>
+errorln  = <prints the string argument followed by a line terminator to standard error, returns true>
 ```
 
 ## Known Issues
 
 The `=` and `!=` comparison operators don't work on booleans because they are Church-encoded.
 
-No garbage collection yet, the interpreter will leak the world until you terminate it (this is going to be fixed in a future release).
+Exceptions may be thrown using the `throw` term (which has native implementation) but there's no way to catch them (yet - a future release will add it).
