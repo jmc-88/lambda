@@ -329,9 +329,9 @@ Ptr<AbstractNode const> LetNode::Preprocess(AbstractPreprocessContext const &rCo
 
 
 AbstractValue const *LetNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	map<string const, AbstractValue const*> Map;
-	Map[m_strName] = m_pExpression->Evaluate(rEnvironment);
-	return m_pRest->Evaluate(AugmentedEnvironment(rEnvironment, Map));
+	return m_pRest->Evaluate(AugmentedEnvironment(rEnvironment, {
+		{ m_strName, m_pExpression->Evaluate(rEnvironment) }
+	}));
 }
 
 
