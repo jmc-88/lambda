@@ -282,8 +282,18 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 
 string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) const {
 	string str;
-	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
-		str += "(" + (*it)->ToString(rEnvironment) + ")";
+	unsigned int cTerms = m_Terms.size();
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it, --cTerms) {
+		Type const Type = (*it)->m_Type;
+		if (cTerms > 1) {
+			if (Type == TYPE_FUNCTION || Type == TYPE_MACRO || Type == TYPE_APPLICATION) {
+				str += "(" + (*it)->ToString(rEnvironment) + ") ";
+			} else {
+				str += (*it)->ToString(rEnvironment) + " ";
+			}
+		} else {
+			str += (*it)->ToString(rEnvironment);
+		}
 	}
 	return str;
 }
