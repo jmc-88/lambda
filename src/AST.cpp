@@ -299,6 +299,47 @@ string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) 
 }
 
 
+LetNode::LetNode(string const &a_rstrName, Ptr<AbstractNode const> &&a_rrpExpression, Ptr<AbstractNode const> &&a_rrpRest)
+	:
+AbstractNode(TYPE_LET),
+	m_strName(a_rstrName),
+	m_pExpression(move(a_rrpExpression)),
+	m_pRest(move(a_rrpRest)) {}
+
+
+LetNode::~LetNode() {}
+
+
+LetNode *LetNode::Clone() const {
+	return new LetNode(m_strName, m_pExpression->Clone(), m_pRest->Clone());
+}
+
+
+set<string> LetNode::GetFreeVariables() const {
+	set<string> Set = m_pExpression->GetFreeVariables();
+	set<string> OtherSet = m_pRest->GetFreeVariables();
+	Set.insert(OtherSet.begin(), OtherSet.end());
+	return Set;
+}
+
+
+Ptr<AbstractNode const> LetNode::Preprocess(AbstractPreprocessContext const &rContext) const {
+	return new LetNode(m_strName, m_pExpression->Preprocess(rContext), m_pRest->Preprocess(rContext));
+}
+
+
+AbstractValue const *LetNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
+	map<string const, AbstractValue const*> Map;
+	Map[m_strName] = m_pExpression->Evaluate(rEnvironment);
+	return m_pRest->Evaluate(AugmentedEnvironment(rEnvironment, Map));
+}
+
+
+string const LetNode::ToString(AbstractEnvironment const &rEnvironment) const {
+	return "let " + m_strName + " = " + m_pExpression->ToString(rEnvironment) + " in " + m_pRest->ToString(rEnvironment);
+}
+
+
 NativeNode::NativeNode()
 	:
 AbstractNode(TYPE_NATIVE) {}

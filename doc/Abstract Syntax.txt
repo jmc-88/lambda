@@ -1,5 +1,5 @@
 L := A | let x = A in L
 A := T [T [...]]
-T := k | x | F | M | (A)
+T := k | x | F | M | (L)
 F := lambda x[, y[, ...]] . L
 M := macro x[, y[, ...]] . L

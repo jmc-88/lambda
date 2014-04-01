@@ -77,6 +77,10 @@ Lexer::Token Lexer::ReadToken() {
 			m_Token = TOKEN_KEYWORD_LAMBDA;
 		} else if (str == "macro") {
 			m_Token = TOKEN_KEYWORD_MACRO;
+		} else if (str == "let") {
+			m_Token = TOKEN_KEYWORD_LET;
+		} else if (str == "in") {
+			m_Token = TOKEN_KEYWORD_IN;
 		} else {
 			m_Token = TOKEN_IDENTIFIER;
 			m_str = str;
@@ -177,6 +181,8 @@ Lexer::Token Lexer::ReadToken() {
 			return m_Token = TOKEN_COMMA;
 		case '.':
 			return m_Token = TOKEN_POINT;
+		case '=':
+			return m_Token = TOKEN_SYMBOL_EQUAL;
 		default:
 			throw SyntaxError();
 		}

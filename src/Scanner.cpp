@@ -3,6 +3,26 @@
 #include <Error.h>
 
 
+Ptr<AbstractNode const> Scanner::ScanLet(Lexer::Token const Terminator) {
+	if (m_rLexer.Current() != Lexer::TOKEN_KEYWORD_LET) {
+		return ScanApplication(Terminator);
+	} else if (m_rLexer.Next() == Lexer::TOKEN_IDENTIFIER) {
+		string strName = m_rLexer.GetString();
+		if (m_rLexer.Next() != Lexer::TOKEN_SYMBOL_EQUAL) {
+			throw SyntaxError();
+		} else {
+			m_rLexer.Next();
+			Ptr<AbstractNode const> pExpression = ScanLet(Lexer::TOKEN_KEYWORD_IN);
+			assert(m_rLexer.Current() == Lexer::TOKEN_KEYWORD_IN);
+			m_rLexer.Next();
+			return new LetNode(strName, move(pExpression), ScanLet(Terminator));
+		}
+	} else {
+		throw SyntaxError();
+	}
+}
+
+
 Ptr<AbstractNode const> Scanner::ScanApplication(Lexer::Token const Terminator) {
 	Ptr<AbstractNode const> pFirst = ScanTerm(Terminator);
 	if (m_rLexer.Current() != Terminator) {
@@ -95,7 +115,7 @@ Ptr<AbstractNode const> Scanner::ScanVariable() {
 Ptr<AbstractNode const> Scanner::ScanParens() {
 	assert(m_rLexer.Current() == Lexer::TOKEN_LEFT_PARENS);
 	m_rLexer.Next();
-	Ptr<AbstractNode const> pTerm = ScanApplication(Lexer::TOKEN_RIGHT_PARENS);
+	Ptr<AbstractNode const> pTerm = ScanLet(Lexer::TOKEN_RIGHT_PARENS);
 	if (m_rLexer.Current() != Lexer::TOKEN_RIGHT_PARENS) {
 		throw SyntaxError();
 	} else {
@@ -123,7 +143,7 @@ Ptr<AbstractNode const> Scanner::ScanFunction(Lexer::Token const Terminator) {
 			throw SyntaxError();
 		} else {
 			m_rLexer.Next();
-			return new FunctionNode(move(Arguments), ScanApplication(Terminator));
+			return new FunctionNode(move(Arguments), ScanLet(Terminator));
 		}
 	}
 }
@@ -147,7 +167,7 @@ Ptr<AbstractNode const> Scanner::ScanMacro(Lexer::Token const Terminator) {
 			throw SyntaxError();
 		} else {
 			m_rLexer.Next();
-			return new MacroNode(move(Arguments), ScanApplication(Terminator));
+			return new MacroNode(move(Arguments), ScanLet(Terminator));
 		}
 	}
 }
@@ -159,5 +179,5 @@ m_rLexer(a_rLexer) {}
 
 
 Ptr<AbstractNode const> Scanner::Scan() {
-	return ScanApplication(Lexer::TOKEN_END);
+	return ScanLet(Lexer::TOKEN_END);
 }

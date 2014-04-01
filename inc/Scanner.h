@@ -8,6 +8,7 @@ struct Scanner {
 private:
 	Lexer &m_rLexer;
 
+	Ptr<AbstractNode const> ScanLet(Lexer::Token const Terminator);
 	Ptr<AbstractNode const> ScanApplication(Lexer::Token const Terminator);
 	Ptr<AbstractNode const> ScanTerm(Lexer::Token const Terminator);
 	Ptr<AbstractNode const> ScanIntegerLiteral();

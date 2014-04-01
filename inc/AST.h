@@ -14,6 +14,7 @@ struct AbstractNode :
 		TYPE_FUNCTION,
 		TYPE_MACRO,
 		TYPE_APPLICATION,
+		TYPE_LET,
 		TYPE_NATIVE
 	};
 
@@ -106,6 +107,24 @@ struct ApplicationNode :
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
+	virtual set<string> GetFreeVariables() const;
+	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
+	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
+	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
+};
+
+
+struct LetNode :
+	public AbstractNode
+{
+	string m_strName;
+	Ptr<AbstractNode const> m_pExpression;
+	Ptr<AbstractNode const> m_pRest;
+
+	LetNode(string const &a_rstrName, Ptr<AbstractNode const> &&a_rrpExpression, Ptr<AbstractNode const> &&a_rrpRest);
+	virtual ~LetNode();
+
+	virtual LetNode *Clone() const;
 	virtual set<string> GetFreeVariables() const;
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
