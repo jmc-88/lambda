@@ -40,7 +40,7 @@ Z lambda factorial, n . if (< n 1) 1 (* n (factorial (- n 1)))
 Z lambda fibonacci, i . if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
 
 # a list of 4 integers: 3, 6, 2, 5
-list 3 (list 6 (list 2 nil))
+list 3 (list 6 (list 2 (list 5 nil)))
 
 # printing a list to standard output
 Z lambda print_list, list . and (head list (lambda head . print head) false) (tail list (lambda tail . and (print ', ') (print_list tail)) true)
