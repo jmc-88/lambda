@@ -33,7 +33,7 @@ struct AbstractNode :
 struct LiteralNode :
 	public AbstractNode
 {
-	AbstractValue const *const m_pValue;
+	AbstractValue const *m_pValue;
 
 	explicit LiteralNode(AbstractValue const *a_pValue);
 	virtual ~LiteralNode();
@@ -49,7 +49,7 @@ struct LiteralNode :
 struct VariableNode :
 	public AbstractNode
 {
-	string const m_strName;
+	string m_strName;
 
 	explicit VariableNode(string const &a_rstrName);
 	virtual ~VariableNode();
@@ -65,8 +65,8 @@ struct VariableNode :
 struct FunctionNode :
 	public AbstractNode
 {
-	vector<string> const m_Arguments;
-	Ptr<AbstractNode const> const m_pBody;
+	vector<string> m_Arguments;
+	Ptr<AbstractNode const> m_pBody;
 
 	FunctionNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~FunctionNode();
@@ -82,8 +82,8 @@ struct FunctionNode :
 struct MacroNode :
 	public AbstractNode
 {
-	vector<string> const m_Arguments;
-	Ptr<AbstractNode const> const m_pBody;
+	vector<string> m_Arguments;
+	Ptr<AbstractNode const> m_pBody;
 
 	MacroNode(vector<string> &&a_rrArguments, Ptr<AbstractNode const> &&a_rrpBody);
 	virtual ~MacroNode();
@@ -99,14 +99,10 @@ struct MacroNode :
 struct ApplicationNode :
 	public AbstractNode
 {
-private:
-	static vector<Ptr<AbstractNode const>> InitializeTerms(initializer_list<AbstractNode const*> a_Terms);
-
-public:
-	vector<Ptr<AbstractNode const>> const m_Terms;
+	vector<Ptr<AbstractNode const>> m_Terms;
 
 	explicit ApplicationNode(vector<Ptr<AbstractNode const>> &&a_rrTerms);
-	explicit ApplicationNode(initializer_list<AbstractNode const*> a_Terms);
+	explicit ApplicationNode(initializer_list<Ptr<AbstractNode const>> a_Terms);
 	virtual ~ApplicationNode();
 
 	virtual ApplicationNode *Clone() const;
@@ -114,7 +110,6 @@ public:
 	virtual Ptr<AbstractNode const> Preprocess(AbstractPreprocessContext const &rContext) const;
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const;
 	virtual string const ToString(AbstractEnvironment const &rEnvironment) const;
-
 };
 
 
