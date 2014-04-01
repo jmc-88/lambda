@@ -82,7 +82,12 @@ AbstractValue const *VariableNode::Evaluate(AbstractEnvironment const &rEnvironm
 
 string const VariableNode::ToString(AbstractEnvironment const &rEnvironment) const {
 	if (rEnvironment.Has(m_strName)) {
-		return (string const)*(rEnvironment[m_strName]);
+		AbstractValue const &rValue = *(rEnvironment[m_strName]);
+		if (rValue.m_Type != AbstractValue::TYPE_CLOSURE) {
+			return rValue;
+		} else {
+			return "(" + (string const)rValue + ")";
+		}
 	} else {
 		return m_strName;
 	}
@@ -291,6 +296,8 @@ string const ApplicationNode::ToString(AbstractEnvironment const &rEnvironment) 
 			} else {
 				str += (*it)->ToString(rEnvironment) + " ";
 			}
+		} else if (Type == TYPE_APPLICATION) {
+			str += "(" + (*it)->ToString(rEnvironment) + ")";
 		} else {
 			str += (*it)->ToString(rEnvironment);
 		}
@@ -318,5 +325,5 @@ Ptr<AbstractNode const> NativeNode::Preprocess(AbstractPreprocessContext const &
 
 
 string const NativeNode::ToString(AbstractEnvironment const &rEnvironment) const {
-	return "< native code >";
+	return "{ native code }";
 }
