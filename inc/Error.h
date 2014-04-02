@@ -49,8 +49,8 @@ struct UserException :
 struct ExitException :
 	public Error
 {
-	AbstractValue const *const m_pCode;
+	IntegerValue const *const m_pCode;
 
-	explicit ExitException(AbstractValue const *const a_pCode);
+	explicit ExitException(IntegerValue const *const a_pCode);
 	virtual ~ExitException();
 };

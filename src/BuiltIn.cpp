@@ -54,7 +54,12 @@ struct ExitNode :
 
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
 		assert(rEnvironment.Has("code"));
-		throw ExitException(rEnvironment["code"]);
+		AbstractValue const *const pCode = rEnvironment["code"];
+		if (pCode->m_Type != AbstractValue::TYPE_INTEGER) {
+			throw RuntimeError();
+		} else {
+			throw ExitException((IntegerValue const*)pCode);
+		}
 	}
 };
 

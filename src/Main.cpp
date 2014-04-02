@@ -25,7 +25,7 @@ int main() {
 		} catch (UserException const &re) {
 			cerr << "exception: " << *(re.m_pValue) << endl;
 		} catch (ExitException const &re) {
-			cout << "program terminated with code " << *(re.m_pCode) << endl;
+			return re.m_pCode->m_n;
 		}
 	}
 }

@@ -25,7 +25,7 @@ m_pValue(a_pValue) {}
 UserException::~UserException() {}
 
 
-ExitException::ExitException(AbstractValue const *const a_pCode)
+ExitException::ExitException(IntegerValue const *const a_pCode)
 	:
 m_pCode(a_pCode) {}
 
