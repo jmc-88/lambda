@@ -75,7 +75,7 @@ struct InputNode :
 
 	virtual AbstractValue const *Evaluate(AbstractEnvironment const &rEnvironment) const {
 		string strLine;
-		::getline(cin, strLine);
+		getline(cin, strLine);
 		return new StringValue(strLine);
 	}
 };

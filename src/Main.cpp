@@ -9,7 +9,7 @@ int main() {
 	string strLine;
 	while (true) {
 		cout << "lambda> " << flush;
-		::getline(cin, strLine);
+		getline(cin, strLine);
 		istringstream iss(strLine);
 		try {
 			cout << "      = " << flush;
