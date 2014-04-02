@@ -10,8 +10,7 @@ struct AbstractValue {
 		TYPE_FLOAT,
 		TYPE_COMPLEX,
 		TYPE_STRING,
-		TYPE_CLOSURE,
-		TYPE_MACRO
+		TYPE_CLOSURE
 	};
 
 	Type const m_Type;
