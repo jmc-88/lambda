@@ -248,29 +248,29 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 		if (pLeft->m_Type != AbstractValue::TYPE_CLOSURE) {
 			throw RuntimeError();
 		} else {
-			Closure const *const pClosure = (Closure const*)pLeft;
+			Closure const &rClosure = *(Closure const*)pLeft;
 			map<string const, AbstractValue const*> Arguments;
-			if (cTerms < pClosure->m_Arguments.size()) {
-				auto j = pClosure->m_Arguments.begin();
+			if (cTerms < rClosure.m_Arguments.size()) {
+				auto j = rClosure.m_Arguments.begin();
 				while (cTerms-- > 0) {
 					Arguments[*(j++)] = (*(i++))->Evaluate(rEnvironment);
 				}
 				vector<string> OtherArguments;
-				set<string> FreeVariables = pClosure->m_pBody->GetFreeVariables();
-				for (; j != pClosure->m_Arguments.end(); ++j) {
+				set<string> FreeVariables = rClosure.m_pBody->GetFreeVariables();
+				for (; j != rClosure.m_Arguments.end(); ++j) {
 					OtherArguments.push_back(*j);
 					FreeVariables.erase(*j);
 				}
 				return new Closure(
 					move(OtherArguments),
-					pClosure->m_pBody->Clone(),
-					AugmentedEnvironment(pClosure->m_Environment, move(Arguments)).Capture(FreeVariables)
+					rClosure.m_pBody->Clone(),
+					AugmentedEnvironment(rClosure.m_Environment, move(Arguments)).Capture(FreeVariables)
 					);
 			} else {
-				for (auto j = pClosure->m_Arguments.begin(); j != pClosure->m_Arguments.end(); ++j, --cTerms) {
+				for (auto j = rClosure.m_Arguments.begin(); j != rClosure.m_Arguments.end(); ++j, --cTerms) {
 					Arguments[*j] = (*(i++))->Evaluate(rEnvironment);
 				}
-				pLeft = pClosure->m_pBody->Evaluate(AugmentedEnvironment(pClosure->m_Environment, move(Arguments)));
+				pLeft = rClosure.m_pBody->Evaluate(AugmentedEnvironment(rClosure.m_Environment, move(Arguments)));
 			}
 		}
 	}
