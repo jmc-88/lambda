@@ -1,6 +1,14 @@
 #pragma once
 
 #include <Environment.h>
+#include <Preprocess.h>
+
+
+struct BuiltInPreprocessContext :
+	public BasePreprocessContext
+{
+	BuiltInPreprocessContext();
+};
 
 
 struct BuiltInEnvironment :

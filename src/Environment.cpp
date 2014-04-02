@@ -84,10 +84,13 @@ AbstractEnvironment(rrEnvironment.m_pMap),
 
 AugmentedEnvironment::~AugmentedEnvironment() {
 	for (auto it = m_Names.begin(); it != m_Names.end(); ++it) {
-		stack<AbstractValue const*> &rStack = (*m_pMap)[*it];
+		string const strName = *it;
+		assert(m_pMap->count(strName));
+		stack<AbstractValue const*> &rStack = (*m_pMap)[strName];
+		assert(!rStack.empty());
 		rStack.pop();
 		if (rStack.empty()) {
-			m_pMap->erase(*it);
+			m_pMap->erase(strName);
 		}
 	}
 }

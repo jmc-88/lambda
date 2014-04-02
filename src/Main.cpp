@@ -16,10 +16,12 @@ int main() {
 			Lexer Lexer(iss);
 			Scanner Scanner(Lexer);
 			cout << *(Scanner.Scan()->Evaluate(BuiltInEnvironment())) << endl;
-		} catch (SyntaxError const &re) {
-			cerr << "syntax error" << endl;
 		} catch (InternalError const &re) {
 			cerr << "internal error" << endl;
+		} catch (SyntaxError const &re) {
+			cerr << "syntax error" << endl;
+		} catch (PreprocessError const &re) {
+			cerr << "preprocess error" << endl;
 		} catch (RuntimeError const &re) {
 			cerr << "runtime error" << endl;
 		} catch (UserException const &re) {
