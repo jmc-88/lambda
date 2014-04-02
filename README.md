@@ -2,7 +2,18 @@
 
 Untyped lambda calculus implementation.
 
-Features:
+## Building and Installing
+
+```bash
+$ git clone https://github.com/71104/lambda.git
+$ cd lambda
+$ make
+```
+
+The lambda interpreter will be built in the `bin` sub-directory.
+
+## Features
+
 * immutable data,
 * eager argument evaluation and call-by-value semantics,
 * macros (functions with lazy evaluation and call-by-name semantics),
