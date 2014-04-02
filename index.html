@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>lambda by 71104</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>lambda</h1>
+        <h2></h2>
+        <a href="https://github.com/71104/lambda" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="lambda" class="anchor" href="#lambda"><span class="octicon octicon-link"></span></a>lambda</h1>
+
+<p>Untyped lambda calculus implementation.</p>
+
+<p>Features:</p>
+
+<ul>
+<li>immutable data,</li>
+<li>eager argument evaluation and call-by-value semantics,</li>
+<li>macros (functions with lazy evaluation and call-by-name semantics),</li>
+<li>left-to-right associativity for applications,
+
+<ul>
+<li>i.e. <code>a b c</code> is equivalent to <code>(a b) c</code>
+</li>
+</ul>
+</li>
+<li>native support for N-ary functions,</li>
+<li>tail call optimization,</li>
+<li>single-line comments (with the <code>#</code> character),</li>
+<li>language utilities (see below),</li>
+<li>extra types:
+
+<ul>
+<li>32 bit signed integers</li>
+<li>64 bit signed integers</li>
+<li>double-precision floating point numbers</li>
+<li>complex numbers (pairs of double-precision floating point numbers)</li>
+<li>strings</li>
+</ul>
+</li>
+</ul><p>Booleans are Church-encoded.</p>
+
+<p>Some examples:</p>
+
+<pre><code># identity function
+lambda x . x
+
+# identity function applied to itself
+(lambda x . x)(lambda x . x)
+
+# the easiest way to loop the interpreter
+(lambda x . x x)(lambda x . x x)
+
+# factorial
+Z lambda factorial, n .
+    if (&lt; n 1) 1 (* n (factorial (- n 1)))
+
+# fibonacci
+Z lambda fibonacci, i .
+    if (&lt; i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
+
+# a list of 4 integers: 3, 6, 2, 5
+list 3 (list 6 (list 2 (list 5 nil)))
+
+# printing a list to standard output
+Z lambda print_list, list .
+    tail list (lambda tail .
+        head list (lambda head .
+            and (print (+ head ', ')) (print_list tail)) false) (head list (lambda head .
+                println head) true)
+
+# scanning a list looking for a value
+Z lambda search_list, list, value .
+    or (head list (lambda head .
+        = head value) false) (tail list (lambda tail .
+            search_list tail value) false)
+</code></pre>
+
+<h2>
+<a name="language-utilities" class="anchor" href="#language-utilities"><span class="octicon octicon-link"></span></a>Language Utilities</h2>
+
+<p>The following predefined terms are readily available and you can use them without defining them (descriptions in angle brackets indicate native code implementation):</p>
+
+<pre><code>true   = lambda x, y . x
+false  = lambda x, y . y
+
+not  = macro a . a false true
+and  = macro a, b . a (lambda x . b) (lambda x . false) nil
+or   = macro a, b . a (lambda x . true) (lambda x . b) nil
+xor  = macro a, b . a (lambda x . not b) (lambda x . b) nil
+
+if  = macro condition, then, else . condition (lambda x . then) (lambda x . else) nil
+
+Z  = lambda f . (lambda x . f lambda v . x x v) (lambda x . f lambda v . x x v)
+
+=   = &lt;value comparison&gt;
+!=  = &lt;negated value comparison&gt;
+&lt;   = &lt;less than&gt;
+&lt;=  = &lt;less than or equal to&gt;
+&gt;   = &lt;greater than&gt;
+&gt;=  = &lt;greater than or equal to&gt;
+
++   = &lt;binary sum&gt;
+-   = &lt;binary subraction&gt;
+*   = &lt;multiplication&gt;
+/   = &lt;division&gt;
+%   = &lt;modulus&gt;
+**  = &lt;power&gt;
+~   = &lt;bitwise NOT&gt;
+&amp;   = &lt;bitwise AND&gt;
+|   = &lt;bitwise OR&gt;
+^   = &lt;bitwise XOR&gt;
+
+pair    = lambda x, y, z . z x y
+first   = macro pair . pair lambda first, second . first
+second  = macro pair . pair lambda first, second . second
+
+list  = lambda element, next, f, g . f element next
+nil   = lambda f, g . g false
+head  = macro list, f, g . list f lambda x . g
+tail  = macro list, f, g . list (lambda element, next . f next) lambda x . g
+
+exit     = &lt;terminates the interpreter using the argument as return code&gt;
+throw    = &lt;throws the argument as an exception, terminates the program&gt;
+input    = &lt;ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator&gt;
+print    = &lt;prints the string argument to standard output, returns true&gt;
+println  = &lt;prints the string argument followed by a line terminator to standard output, returns true&gt;
+error    = &lt;prints the string argument to standard error, returns true&gt;
+errorln  = &lt;prints the string argument followed by a line terminator to standard error, returns true&gt;
+</code></pre>
+
+<h2>
+<a name="known-issues" class="anchor" href="#known-issues"><span class="octicon octicon-link"></span></a>Known Issues</h2>
+
+<p>The <code>=</code> and <code>!=</code> comparison operators don't work on booleans because they are Church-encoded.</p>
+
+<p>Exceptions may be thrown using the <code>throw</code> term (which has native implementation) but there's no way to catch them (yet - a future release will add it).</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/71104/lambda/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/71104/lambda/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/71104/lambda"></a> is maintained by <a href="https://github.com/71104">71104</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-36961344-8");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
