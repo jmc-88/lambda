@@ -34,19 +34,28 @@ lambda x . x
 (lambda x . x x)(lambda x . x x)
 
 # factorial
-Z lambda factorial, n . if (< n 1) 1 (* n (factorial (- n 1)))
+Z lambda factorial, n .
+	if (< n 1) 1 (* n (factorial (- n 1)))
 
 # fibonacci
-Z lambda fibonacci, i . if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
+Z lambda fibonacci, i .
+	if (< i 2) 1 (+ (fibonacci (- i 1)) (fibonacci (- i 2)))
 
 # a list of 4 integers: 3, 6, 2, 5
 list 3 (list 6 (list 2 (list 5 nil)))
 
 # printing a list to standard output
-Z lambda print_list, list . and (head list (lambda head . print head) false) (tail list (lambda tail . and (print ', ') (print_list tail)) false)
+Z lambda print_list, list .
+	tail list (lambda tail .
+		head list (lambda head .
+			and (print (+ head ', ')) (print_list tail)) false) (head list (lambda head .
+				println head) true)
 
 # scanning a list looking for a value
-Z lambda search_list, list, value . or (head list (lambda head . = head value) false) (tail list (lambda tail . search_list tail value) false)
+Z lambda search_list, list, value .
+	or (head list (lambda head .
+		= head value) false) (tail list (lambda tail .
+			search_list tail value) false)
 ```
 
 ## Language Utilities
@@ -93,7 +102,7 @@ nil   = lambda f, g . g false
 head  = macro list, f, g . list f lambda x . g
 tail  = macro list, f, g . list (lambda element, next . f next) lambda x . g
 
-exit     = <immediately terminates the program and uses the argument as return code>
+exit     = <terminates the interpreter using the argument as return code>
 throw    = <throws the argument as an exception, terminates the program>
 input    = <ignores the argument, reads a line from standard input and returns it as a string, excluding the line terminator>
 print    = <prints the string argument to standard output, returns true>
