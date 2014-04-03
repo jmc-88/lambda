@@ -241,9 +241,13 @@ Ptr<AbstractNode const> ApplicationNode::Preprocess(AbstractPreprocessContext co
 
 
 AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvironment) const {
-	auto i = m_Terms.begin();
-	AbstractValue const *pLeft = (*(i++))->Evaluate(rEnvironment);
-	unsigned int cTerms = m_Terms.size() - 1;
+	vector<AbstractValue const*> Values;
+	for (auto it = m_Terms.begin(); it != m_Terms.end(); ++it) {
+		Values.push_back((*it)->Evaluate(rEnvironment));
+	}
+	unsigned int cTerms = Values.size() - 1;
+	auto i = Values.begin();
+	AbstractValue const *pLeft = *(i++);
 	while (cTerms > 0) {
 		if (pLeft->m_Type != AbstractValue::TYPE_CLOSURE) {
 			throw RuntimeError();
@@ -252,8 +256,8 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 			map<string const, AbstractValue const*> Arguments;
 			if (cTerms < rClosure.m_Arguments.size()) {
 				auto j = rClosure.m_Arguments.begin();
-				while (cTerms-- > 0) {
-					Arguments[*(j++)] = (*(i++))->Evaluate(rEnvironment);
+				for (; cTerms-- > 0; ++j, ++i) {
+					Arguments[*j] = *i;
 				}
 				vector<string> OtherArguments;
 				set<string> FreeVariables = rClosure.m_pBody->GetFreeVariables();
@@ -267,8 +271,8 @@ AbstractValue const *ApplicationNode::Evaluate(AbstractEnvironment const &rEnvir
 					AugmentedEnvironment(rClosure.m_Environment, move(Arguments)).Capture(FreeVariables)
 					);
 			} else {
-				for (auto j = rClosure.m_Arguments.begin(); j != rClosure.m_Arguments.end(); ++j, --cTerms) {
-					Arguments[*j] = (*(i++))->Evaluate(rEnvironment);
+				for (auto j = rClosure.m_Arguments.begin(); j != rClosure.m_Arguments.end(); ++j, ++i, --cTerms) {
+					Arguments[*j] = *i;
 				}
 				pLeft = rClosure.m_pBody->Evaluate(AugmentedEnvironment(rClosure.m_Environment, move(Arguments)));
 			}
