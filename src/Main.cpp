@@ -5,12 +5,19 @@
 #include <Values.h>
 #include <BuiltIn.h>
 
+namespace {
+
+bool prompt(string& input) {
+	cout << "lambda> " << flush;
+	return !getline(cin, input).eof();
+}
+
+}
+
 int main() {
-	string strLine;
-	while (true) {
-		cout << "lambda> " << flush;
-		getline(cin, strLine);
-		istringstream iss(strLine);
+	string input;
+	while (prompt(input)) {
+		istringstream iss(input);
 		try {
 			cout << "      = " << flush;
 			Lexer Lexer(iss);
@@ -30,4 +37,5 @@ int main() {
 			return re.m_pCode->m_n;
 		}
 	}
+	cout << endl;
 }
